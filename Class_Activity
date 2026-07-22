@@ -1,4 +1,9 @@
+// Example of Image (Lake Depths)
 
-// Example of image collection 
-var dataset= ee.ImageCollection("NOAA/CDR/SST_WHOI/V2");
-print(dataset)
+var lakes = ee.Image("projects/sat-io/open-datasets/GLOBathy/GLOBathy_bathymetry")
+print(lakes)
+Map.addLayer(lakes,{min:0,max:200,palette:['yellow','green','blue']},'Lakes')
+
+// Example of Feature Collection (Global Land Ice)
+var ice = ee.FeatureCollection("GLIMS/20230607")
+Map.addLayer(ice,{color: 'lightblue'},"Land Ice")
