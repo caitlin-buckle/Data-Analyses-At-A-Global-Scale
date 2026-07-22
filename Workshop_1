@@ -1,0 +1,13 @@
+//*******************************//
+// MB5370 Module Four Workshop One 
+//*******************************//
+
+//*******************************//
+// Learning Javascript 
+//*******************************//
+
+// Notes to Myself 
+    // Use two forward slashes for writing comments 
+    /* You can also use single slash and star to write multi comment lines if you like */ 
+
+print('Hello, World!')
