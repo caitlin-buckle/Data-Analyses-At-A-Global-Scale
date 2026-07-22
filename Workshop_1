@@ -42,8 +42,12 @@ var cityData = { // creates an object with properties described in the code, if 
   };
 print(cityData);
 
+// take notes for creating functions!!
+
 //*******************************//
 // Section Two: Learning Earth Engine 
 //*******************************//
+
+
 
 
