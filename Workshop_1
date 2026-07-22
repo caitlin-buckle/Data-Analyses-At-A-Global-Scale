@@ -1,6 +1,3 @@
-/**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var geometry = /* color: #d63000 */ee.Geometry.Point([174.06524200144904, -39.2966921983342]);
-/***** End of imports. If edited, may not auto-convert in the playground. *****/
 //*******************************//
 // MB5370 Module Four Workshop One 
 //*******************************//
@@ -76,10 +73,32 @@ var geometry = /* color: #d63000 */ee.Geometry.Point([174.06524200144904, -39.29
 
 // Data Structure 
 
-Map.setOptions('SATELLITE') // sets that base layer as satellite imagery to satellite (other options include terrain)
-// Can change how the maps look using snazzy.maps.com 
+// Map.setOptions('SATELLITE') // sets that base layer as satellite imagery to satellite (other options include terrain)
+// // Can change how the maps look using snazzy.maps.com 
 
-Map.setCenter(174.0638,-39.298,11) // sets the centre of your map to the coordinates of your choice 
+// Map.setCenter(174.0638,-39.298,11) // sets the centre of your map to the coordinates of your choice 
+
+// // In search bar, search SRTM Version 4 to read about the data, and copy EE snippet to add to EE 
+
+// // Import SRTM data 
+// var dataset =ee.Image("CGIAR/SRTM90_V4");
+// print (dataset) // type = image, one band (0 = elevation), can also see properties in console
+
+// Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
+// // min is at sea level (0m), max is 2500m 
+// // In insepctor, can click on a point and it will tell you the elevation of that point (click the down arrow next to custom visualization)
+// // By changing palette, can make custom colours 
+// // Custom Visualisation is the name of the layer 
+// // Can turn off layers in the map console (there will be a button called "Layers" if any layers have been created, can toggle on/off)
+// // Can also use hex colour codes to set custome palettes 
+// // Important to set your maximums (if working with elevation) to the context you are working with (e.g., what works for Taranaki, ~2300m, will not work for the Himalayas, ~8000m)
+
+// // Search WDPA (polygons)
+
+// var WDPA = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+// Map.addLayer(WDPA,{color:'lightgreen'},'WDPA'); // adds polygons of protected areas to our map 
+// // can use inspector tool to inspect WDPA areas (properties --> lots of info on that specific protected area) 
+
 
 
 
