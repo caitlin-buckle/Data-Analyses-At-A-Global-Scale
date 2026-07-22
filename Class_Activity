@@ -1,4 +1,4 @@
 
 // Example of image collection 
 var dataset= ee.ImageCollection("NOAA/CDR/SST_WHOI/V2");
-Map.addLayer(dataset,{min:0, max:35, palette: ['blue', 'green', 'yellow', 'orange', 'red']},'sst');
+print(dataset)
