@@ -1,1 +1,2 @@
 var dataset= ee.ImageCollection("NOAA/CDR/SST_WHOI/V2");
+map.AddL
