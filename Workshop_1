@@ -3,11 +3,42 @@
 //*******************************//
 
 //*******************************//
-// Learning Javascript 
+// Section One: Learning Javascript 
 //*******************************//
 
 // Notes to Myself 
     // Use two forward slashes for writing comments 
-    /* You can also use single slash and star to write multi comment lines if you like */ 
+    /* You can also use single slash and star to write multi comment lines if you like */
+    // Ctrl+Enter shortcut to run the script (will run everything, not able to run singular lines)
 
 print('Hello, World!')
+
+// Creating Variables
+var the_answer = 42 //creating a variable (numeric, integer)
+print(the_answer)
+
+var city = 'San Fransisco' //creating a categorical variable
+print(city) 
+
+var population = 873965 // creating numeric variable 
+print(population)
+
+// No function called 'print', Earth engine using Chrome's built-in Javascript to run Javascript code (in purple)
+
+print('This city is',city) //Javascript - stitching two variables together 
+
+// Creating Lists 
+
+var cities = ['Townsville','Los Angeles','New York'] 
+print(cities) // List = collection of words, each word has a index number (can pull out specific ones by referencing the index number) - differs based on programming language
+
+// Dictionaries 
+
+var cityData = { // creates an object with properties described in the code, if multiple values (e.g., coords) generates a drop-down with index numbers for each value 
+  'city': 'San Fransisco',
+  'coord': [122.2, 37.77],
+  'pop': 873965
+  }
+print(cityData)
+
+
