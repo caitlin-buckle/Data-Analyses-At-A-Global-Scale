@@ -9,9 +9,9 @@
     // It is general practice to finish a line of code with ; , means that the code ends there (will work without but will say it is missing ;) 
     // Cmd+/ to comment out entire section (so EE doesn't run the whole script every time)
 
-//*******************************//
+//
 // Section One: Learning Javascript 
-//*******************************//
+//
 
 // print('Hello, World!')
 
@@ -45,9 +45,9 @@
 
 // // take notes for creating functions!!
 
-// //*******************************//
-// // Section Two: Earth Engine Basics
-// //*******************************//
+// 
+//Section Two: Earth Engine Basics
+// 
 
 // // Computing with Earth Engine 
 
@@ -99,6 +99,41 @@
 // Map.addLayer(WDPA,{color:'lightgreen'},'WDPA'); // adds polygons of protected areas to our map 
 // // can use inspector tool to inspect WDPA areas (properties --> lots of info on that specific protected area) 
 
+//*******************************//
+// MB5370 Module Four Workshop Two 
+//*******************************//
 
+//
+// Section One: Filtering
+//
 
+// Load Mt Taranaki layers from yesterday
 
+Map.setOptions('SATELLITE');
+
+Map.setCenter(174.0638,-39.298,11) ;
+
+var dataset =ee.Image("CGIAR/SRTM90_V4");
+print ('Elevation', dataset); // 
+
+Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
+
+var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
+
+print('Number of Protected Areas', protected_area.size()); // .size() reports the number of rows in Feature collection 
+// WDPA feature collection = 307,004 (number of protected areas globally)
+
+// Not all protected areas are the same (differing strengths of management etc.), can filter by protected area categories (IUCN_CAT)
+
+print('First PA in FC', protected_area.first()); //IUCN_CAT: IV (4)
+
+var iucn_pa = protected_area.filter(ee.Filter.eq('IUCN_CAT', 'II')); // Filter protected_area for level II protected areas
+Map.addLayer(iucn_pa, {color:'pink'},'National Parks'); //colour all national parks pink 
+
+var iucn_pre1980 = protected_area.filter(ee.Filter.lte('STATUS_YR',1980)); //protected areas established pre-1980
+Map.addLayer(iucn_pre1980,{color:'white'},'Protected Areas in 1980');
+
+var countries = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017") // load in country datatset from catalogue (feature collection, polygons of countries borders)
+print('Countries', countries)
+Map.addLayer(countries)
