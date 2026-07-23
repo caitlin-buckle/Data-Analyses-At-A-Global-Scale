@@ -52,6 +52,36 @@ var mpaImage = marineMPAs.style({color: 'yellow', fillColor: 'yellow'});
 
 Map.addLayer(marineMPAs, {color: 'yellow'}, 'Marine Protected Areas');
 
+var snazzy = require("users/aazuspan/snazzy:styles");
 
+// 1. Create two separate map windows for the split panel
+var leftMap = ui.Map();
+var rightMap = ui.Map();
 
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map", "Blank Map", leftMap);
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map", "Blank Map", rightMap);
 
+// 2. Link them together so they pan and zoom in sync
+var linker = ui.Map.Linker([leftMap, rightMap]);
+
+// 3. Populate the LEFT map (Ecosystems base only)
+leftMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
+leftMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
+
+// 4. Populate the RIGHT map (Ecosystems base + Marine MPAs on top)
+rightMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
+rightMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
+rightMap.addLayer(marineMPAs, {color: 'yellow', fillColor: 'yellow'}, 'Marine Protected Areas');
+
+// 5. Create the split panel with the vertical wipe slider
+var splitPanel = ui.SplitPanel({
+  firstPanel: leftMap,
+  secondPanel: rightMap,
+  orientation: 'horizontal',
+  wipe: true
+});
+
+// 6. Replace the Code Editor display with the split panel app once
+ui.root.widgets().reset([splitPanel]);
+
+leftMap.setCenter(133, -25, 4);
