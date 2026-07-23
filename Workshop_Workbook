@@ -251,13 +251,13 @@ print('The area of Mt Taranaki NP above 1500m (km2)', ee.Number(areaGt1500m.get(
 //
 
 var dataset = ee.ImageCollection('WORLDCLIM/V1/MONTHLY'); 
-print(dataset)// image collection, 12 images (temperature for each month)
+print(dataset); // image collection, 12 images (temperature for each month)
 
-var jan_climate = ee.Image('WORLDCLIM/V1/MONTHLY/01')
-var july_climate = ee.Image('WORLDCLIM/V1/MONTHLY/07')
+var jan_climate = ee.Image('WORLDCLIM/V1/MONTHLY/01');
+var july_climate = ee.Image('WORLDCLIM/V1/MONTHLY/07');
 
-var jan_climate_avg = jan_climate.select('tavg')
-var july_climate_avg = july_climate.select('tavg')
+var jan_climate_avg = jan_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
+var july_climate_avg = july_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
 
 var meanTemperatureVis = {
   min: -40, 
@@ -268,5 +268,15 @@ var meanTemperatureVis = {
 Map.addLayer(jan_climate_avg, meanTemperatureVis,'janClimate');
 Map.addLayer(july_climate_avg,meanTemperatureVis,'julyClimate'); 
 
+var annualMeanTemperature = dataset // generating an annual average 
+  .select('tavg')
+  .mean() // reducer
+  .multiply(0.1); // scale pixels to correct values 
+
+Map.setCenter(71.7,52.4,3); // set map centre to central Europe 
+Map.addLayer(annualMeanTemperature,meanTemperatureVis,'Mean Annual Temperature'); 
+
+var dataset = ee.ImageCollection('LANDSAT/LC08/C02/T1_TOA')
+  .filterDate('2017-01-01','2017-12-31')
 
 
