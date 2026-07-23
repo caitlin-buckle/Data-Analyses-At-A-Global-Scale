@@ -159,10 +159,31 @@
 // The problem - problem w/ radar instrument resulting in all topographical features underestimated by 100m 
 
 // Import SRTM data 
-var dataset =ee.Image("CGIAR/SRTM90_V4");
+var dataset =ee.Image("CGIAR/SRTM90_V4"); // import elevation image
 print (dataset);
 
-Map.addLayer(dataset,0.6); 
+var elevationVis = {min:0,max:2500,palette: ['darkblue','lightblue','yellow']}; // set elevation visual custom parameters
+
+Map.addLayer(dataset,elevationVis,'Elevation',true, 0.6); // add elevation visual layer to map, 0.6 changes the opacity so can still see satellite image underneath 
+
+var strm_fixed = dataset.add(100); // adds 100 onto each integer value (for each pixel in the raster - correcting problem caused by radar)
+Map.addLayer(strm_fixed,elevationVis,'Fixed STRM', true, 0.6);
+
+var elevGt1500 = dataset.gt(1500); // filters pixels to show only those with an elevation greater than 1500 
+Map.addLayer(elevGt1500); // binary output, greater than 1500 = white, not greater = black 
+
+var elevGt1500 = dataset.gt(1500).selfMask();
+Map.addLayer(elevGt1500); // masks every 0 value (not greater than 1500m) out of the image - better for visualistics and means no other operations performed are applied to it 
+
+Map.addLayer(elevGt1500.selfMask(), {palette:'fuchsia'}, 'GT 1500m',true, 0.7);
+
+var terrain = ee.Terrain.products(dataset); // use terrain (algorithm that returns several topographic variables from an elevation image)
+print('Terrain',terrain); // four bands within - elevation, slope, aspect, hillshade
+
+var slope = terrain.select(['slope']); // create images from the bands (within terrain) that we are interested in
+var hillshade = terrain.select(['hillshade']); 
+Map.addLayer(hillshade);
+Map.addLayer(slope,{palette: ['white','darkred','black'],min:0,max:45},'slope');
 
 
 
