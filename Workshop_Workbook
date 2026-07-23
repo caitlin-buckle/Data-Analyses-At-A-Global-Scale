@@ -109,31 +109,60 @@
 
 // Load Mt Taranaki layers from yesterday
 
-Map.setOptions('SATELLITE');
+// Map.setOptions('SATELLITE');
 
-Map.setCenter(174.0638,-39.298,11) ;
+// Map.setCenter(174.0638,-39.298,11) ;
 
+// var dataset =ee.Image("CGIAR/SRTM90_V4");
+// print ('Elevation', dataset); // 
+
+// Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
+
+// var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+// Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
+
+// print('Number of Protected Areas', protected_area.size()); // .size() reports the number of rows in Feature collection 
+// // WDPA feature collection = 307,004 (number of protected areas globally)
+
+// // Not all protected areas are the same (differing strengths of management etc.), can filter by protected area categories (IUCN_CAT)
+
+// print('First PA in FC', protected_area.first()); //IUCN_CAT: IV (4)
+
+// var iucn_pa = protected_area.filter(ee.Filter.eq('IUCN_CAT', 'II')); // Filter protected_area for level II protected areas
+// Map.addLayer(iucn_pa, {color:'pink'},'National Parks'); //colour all national parks pink 
+
+// var iucn_pre1980 = protected_area.filter(ee.Filter.lte('STATUS_YR',1980)); //protected areas established pre-1980
+// Map.addLayer(iucn_pre1980,{color:'white'},'Protected Areas in 1980');
+
+// var countries = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017"); // load in country datatset from catalogue (feature collection, polygons of countries borders)
+// print('Countries', countries); // under features (312 elements), properties, country_na --> will tell you name of Country
+// Map.addLayer(countries);
+// // can use inspector tool to click on country to also isolate country
+
+// var nz = countries.filter(ee.Filter.equals('country_na','New Zealand')); // filters the feature class so only features with country_na = New Zealand
+// print('NZ', nz); // only NZ in the feature collection 
+// Map.addLayer(nz); 
+
+// var nz_pas = protected_area.filter(ee.Filter.bounds(nz)) // apply a spatial filter (nz) to the protected areas 
+// print ('Number of PAs in NZ', nz_pas.size()) // 10,120 protected areas in NZ (or actually those within the land mass boundaries (not EEZ boundaries))
+// Map.addLayer(nz_pas,{color:'yellow'},'NA PAs only') // NOTE: only includes protected areas that are within/encompass a defined terrestrial landmass in the NZ-only feature class (doesn't include protected areas with no terrestrial landmass)
+
+// var nz_national_parks = protected_area // can string all commands together (like piping in R)
+//   .filter(ee.Filter.eq('IUCN_CAT','II')) // filter to only national parks (IUCN_CAT = 2)
+//   .filter(ee.Filter.bounds(nz)) // filter to only those within NZ polygon boundaries
+// print('Number of National Parks in NZ', nz_national_parks.size()) // National Parks in NZ = 18 
+
+//
+// Computation in Earth Engine 
+// 
+
+// The problem - problem w/ radar instrument resulting in all topographical features underestimated by 100m 
+
+// Import SRTM data 
 var dataset =ee.Image("CGIAR/SRTM90_V4");
-print ('Elevation', dataset); // 
+print (dataset);
 
-Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
+Map.addLayer(dataset,0.6); 
 
-var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
-Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
 
-print('Number of Protected Areas', protected_area.size()); // .size() reports the number of rows in Feature collection 
-// WDPA feature collection = 307,004 (number of protected areas globally)
 
-// Not all protected areas are the same (differing strengths of management etc.), can filter by protected area categories (IUCN_CAT)
-
-print('First PA in FC', protected_area.first()); //IUCN_CAT: IV (4)
-
-var iucn_pa = protected_area.filter(ee.Filter.eq('IUCN_CAT', 'II')); // Filter protected_area for level II protected areas
-Map.addLayer(iucn_pa, {color:'pink'},'National Parks'); //colour all national parks pink 
-
-var iucn_pre1980 = protected_area.filter(ee.Filter.lte('STATUS_YR',1980)); //protected areas established pre-1980
-Map.addLayer(iucn_pre1980,{color:'white'},'Protected Areas in 1980');
-
-var countries = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017") // load in country datatset from catalogue (feature collection, polygons of countries borders)
-print('Countries', countries)
-Map.addLayer(countries)
