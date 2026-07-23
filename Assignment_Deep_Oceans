@@ -22,11 +22,17 @@ var ocean_ecosystem = ee.Image(0)
 //var oceanMask = land.reduceToImage(['cat'],ee.Reducer.first()).unmask(0).not();
 
 var snazzy = require("users/aazuspan/snazzy:styles");
-snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map","Blank Map")
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map","Blank Map");
 
 Map.setCenter(150,-25,4);
 Map.addLayer(ocean_ecosystem,{
   min:1,
   max:4,
   palette: ['66ffd9','66b3ff','0044cc','001133']
-},'Major Marine Ecosystem Types')
+},'Major Marine Ecosystem Types');
+
+// Adding vector layer - marine protected areas 
+
+var pa = ee.FeatureCollection("WCMC/WDPA/current/polygons")
+
+print(pa)
