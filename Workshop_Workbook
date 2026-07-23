@@ -211,4 +211,62 @@ var slopeOutput2 = taranakiSlope.reduceRegion({
 }); // generate second slope output using the pre-clipped slope
 print('slopeOutput2',slopeOutput2); // mean slope = 10.036 degrees - same as using the geometry to clip (as output one)
 
+var elevOutput_Max = dataset.reduceRegion({
+  reducer:ee.Reducer.max(),
+  geometry: taranaki,
+  scale: 90
+});
+print('elevOutput_Max',elevOutput_Max); // max elevation = 2484m 
+
+var elevOutput_Min = dataset.reduceRegion({
+  reducer:ee.Reducer.min(),
+  geometry:taranaki, 
+  scale: 90
+}); 
+print('elevOutput_Min',elevOutput_Min) // min elevation = 108m 
+
+// LOTS of different reducers available 
+
+var elevOutput_MinMax = dataset.reduceRegion({
+  reducer:ee.Reducer.minMax(), // different reducer - calculates min and max in one command!!
+  geometry: taranaki,
+  scale:90
+}); 
+print('elevOutput_MinMax',elevOutput_MinMax) // max = 2484m, min = 108m 
+
+// EXAMPLE: finding the area (km2) of Mt Taranaki NP that is above 1500m elevation threshold 
+
+var areaGt1500m = elevGt1500 
+  .multiply(ee.Image.pixelArea()) // generates area of each pixel 
+  .reduceRegion({
+    reducer:ee.Reducer.sum(), // sum of all pixels together (total area)
+    geometry: taranaki,
+    scale:90 
+  })
+print('The area of Mt Taranaki NP above 1500m (m2)',areaGt1500m) // area >1500m = 11,474,443.341m2
+print('The area of Mt Taranaki NP above 1500m (km2)', ee.Number(areaGt1500m.get('elevation')).divide(1000*1000)) // area >1500m = 11.474km2
+
+//
+// Image Reducers 
+//
+
+var dataset = ee.ImageCollection('WORLDCLIM/V1/MONTHLY'); 
+print(dataset)// image collection, 12 images (temperature for each month)
+
+var jan_climate = ee.Image('WORLDCLIM/V1/MONTHLY/01')
+var july_climate = ee.Image('WORLDCLIM/V1/MONTHLY/07')
+
+var jan_climate_avg = jan_climate.select('tavg')
+var july_climate_avg = july_climate.select('tavg')
+
+var meanTemperatureVis = {
+  min: -40, 
+  max: 30, 
+  palette: ['blue','purple','cyan','green','yellow','red'],
+};
+
+Map.addLayer(jan_climate_avg, meanTemperatureVis,'janClimate');
+Map.addLayer(july_climate_avg,meanTemperatureVis,'julyClimate'); 
+
+
 
