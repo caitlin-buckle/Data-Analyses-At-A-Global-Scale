@@ -118,8 +118,8 @@
 
 // Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
 
-// var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
-// Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
+var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
 
 // print('Number of Protected Areas', protected_area.size()); // .size() reports the number of rows in Feature collection 
 // // WDPA feature collection = 307,004 (number of protected areas globally)
@@ -183,7 +183,32 @@ print('Terrain',terrain); // four bands within - elevation, slope, aspect, hills
 var slope = terrain.select(['slope']); // create images from the bands (within terrain) that we are interested in
 var hillshade = terrain.select(['hillshade']); 
 Map.addLayer(hillshade);
-Map.addLayer(slope,{palette: ['white','darkred','black'],min:0,max:45},'slope');
+Map.addLayer(slope,{palette: ['white','darkblue','black'],min:0,max:45},'slope');
 
+// 
+// Spatial Reducers 
+// 
+
+var taranaki = protected_area.filter(ee.Filter.eq('NAME','Egmont National Park')); // uncommented protected_area creation in code above 
+Map.addLayer(taranaki, {color:'orange'},'Mt Taranaki')
+
+var slopeOutput = slope.reduceRegion({ // apply spatial reducer to estimate mean slope of Mt Taranki NP
+  reducer:ee.Reducer.mean(), // compute mean of all slope pixel values in NP 
+  geometry: taranaki, //the geometry we created above
+  scale: 90 // pixel size in metres (from NP metadata)
+})
+print('slopeOutput',slopeOutput) // mean slope = 10.036 degrees 
+
+// In ArcGIS, would clip the elevation (STRM) layer first to the Mt Taranaki NP - compare whether clipping first or just applying 'geometry' argument reduces the analysis 
+
+var taranakiSlope = slope.clip(taranaki);
+Map.addLayer(taranakiSlope,{palette: ['white','darkblue','black'],min:0,max:45},'taranaki slope');
+
+var slopeOutput2 = taranakiSlope.reduceRegion({
+  reducer: ee.Reducer.mean(),
+  geometry: taranaki,
+  scale: 90
+}); // generate second slope output using the pre-clipped slope
+print('slopeOutput2',slopeOutput2); // mean slope = 10.036 degrees - same as using the geometry to clip (as output one)
 
 
