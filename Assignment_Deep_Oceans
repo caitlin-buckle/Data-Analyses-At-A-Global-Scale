@@ -34,16 +34,24 @@ Map.addLayer(ocean_ecosystem,{
 // Adding vector layer - marine protected areas 
 
 var pa = ee.FeatureCollection("WCMC/WDPA/current/polygons"); // import WDPA dataset (polygons of global protected areas)
-var MPAs = pa.filter(ee.Filter.inList('marine', [1, 2])); // filter the pa dataset by MARINE property, with 1 being coastal PAs (encompasses terrestrial and marine environ), 2 being fully marine PAs
+//var MPAs = pa.filter(ee.Filter.inList('marine', [1, 2])); // filter the pa dataset by MARINE property, with 1 being coastal PAs (encompasses terrestrial and marine environ), 2 being fully marine PAs
 
-var coastalMPAs = MPAs.filter(ee.Filter.eq('marine', 1));
-var MarineMPAs = MPAs.filter(ee.Filter.eq('marine', 2));
+//var coastalMPAs = MPAs.filter(ee.Filter.eq('marine', 1));
+//var MarineMPAs = MPAs.filter(ee.Filter.eq('marine', 2));
 
-print('Total PA count:', pa.size());
-print('Marine/Coastal PA count:', MarineMPAs.size());
+//print('Total PA count:', pa.size());
+//print('Marine/Coastal PA count:', MarineMPAs.size());
+
+//Map.addLayer(coastalMPAs, {color: 'orange'}, 'Coastal MPAs (1)');
+//Map.addLayer(MarineMPAs, {color: 'yellow'}, '100% Marine MPAs (2)');
+
+var marineMPAs = pa.filter(ee.Filter.gt('GIS_M_AREA', 0));
+print('Verified Marine/Coastal Count:', marineMPAs.size());
+
+var mpaImage = marineMPAs.style({color: 'yellow', fillColor: 'yellow'});
+
+Map.addLayer(marineMPAs, {color: 'yellow'}, 'Marine Protected Areas');
 
 
 
 
-Map.addLayer(coastalMPAs, {color: 'orange'}, 'Coastal MPAs (1)');
-Map.addLayer(MarineMPAs, {color: 'yellow'}, '100% Marine MPAs (2)');
