@@ -17,9 +17,9 @@ var ocean_ecosystem = ee.Image(0)
   .where(submarineCanyon,1)
   .selfMask();
 
-var land = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017').union();
-print(land)
-var oceanMask = land.reduceToImage(['cat'],ee.Reducer.first()).unmask(0).not();
+//var land = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017').union();
+//print(land)
+//var oceanMask = land.reduceToImage(['cat'],ee.Reducer.first()).unmask(0).not();
 
 var snazzy = require("users/aazuspan/snazzy:styles");
 snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map","Blank Map")
