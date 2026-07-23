@@ -1,9 +1,9 @@
 var dataset = ee.Image("NOAA/NGDC/ETOPO1").select('bedrock'); // import the dataset (ETOPO1), select bedrock band
-dataset = dataset.updateMask(dataset.lt(0))
+dataset = dataset.updateMask(dataset.lt(0));
 print(dataset); 
 Map.addLayer(dataset,{min:-3000,max:3000,palette:['darkblue','blue','green','yellow','orange','red']},'Bedrock'); 
 
-var slope = ee.Terrain.slope(dataset) // calculate slope from ETOPO1 dataset 
+var slope = ee.Terrain.slope(dataset); // calculate slope from ETOPO1 dataset 
 
 var hadalTrench = dataset.lt(-6000); // hadal trenches and troughts, >6000m
 var abyssalPlains = dataset.gt(-6000).and(dataset.lt(-3000)); // abyssal plains, 3000-6000m
@@ -17,10 +17,16 @@ var ocean_ecosystem = ee.Image(0)
   .where(submarineCanyon,1)
   .selfMask();
 
-Map.setOptions('SATELLITE');
+var land = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017').union();
+print(land)
+var oceanMask = land.reduceToImage(['cat'],ee.Reducer.first()).unmask(0).not();
+
+var snazzy = require("users/aazuspan/snazzy:styles");
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map","Blank Map")
+
 Map.setCenter(150,-25,4);
 Map.addLayer(ocean_ecosystem,{
   min:1,
   max:4,
-  palette: ['00ffcc','66b3ff','0044cc','001133']
+  palette: ['66ffd9','66b3ff','0044cc','001133']
 },'Major Marine Ecosystem Types')
