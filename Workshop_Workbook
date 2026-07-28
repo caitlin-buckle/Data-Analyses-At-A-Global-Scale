@@ -118,8 +118,8 @@
 
 // Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
 
-var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
-Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
+// var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+// Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
 
 // print('Number of Protected Areas', protected_area.size()); // .size() reports the number of rows in Feature collection 
 // // WDPA feature collection = 307,004 (number of protected areas globally)
@@ -159,137 +159,136 @@ Map.addLayer(protected_area,{color:'lightgreen'},'WDPA');
 // The problem - problem w/ radar instrument resulting in all topographical features underestimated by 100m 
 
 // Import SRTM data 
-var dataset =ee.Image("CGIAR/SRTM90_V4"); // import elevation image
-print (dataset);
+// var dataset =ee.Image("CGIAR/SRTM90_V4"); // import elevation image
+// print (dataset);
 
-var elevationVis = {min:0,max:2500,palette: ['darkblue','lightblue','yellow']}; // set elevation visual custom parameters
+// var elevationVis = {min:0,max:2500,palette: ['darkblue','lightblue','yellow']}; // set elevation visual custom parameters
 
-Map.addLayer(dataset,elevationVis,'Elevation',true, 0.6); // add elevation visual layer to map, 0.6 changes the opacity so can still see satellite image underneath 
+// Map.addLayer(dataset,elevationVis,'Elevation',true, 0.6); // add elevation visual layer to map, 0.6 changes the opacity so can still see satellite image underneath 
 
-var strm_fixed = dataset.add(100); // adds 100 onto each integer value (for each pixel in the raster - correcting problem caused by radar)
-Map.addLayer(strm_fixed,elevationVis,'Fixed STRM', true, 0.6);
+// var strm_fixed = dataset.add(100); // adds 100 onto each integer value (for each pixel in the raster - correcting problem caused by radar)
+// Map.addLayer(strm_fixed,elevationVis,'Fixed STRM', true, 0.6);
 
-var elevGt1500 = dataset.gt(1500); // filters pixels to show only those with an elevation greater than 1500 
-Map.addLayer(elevGt1500); // binary output, greater than 1500 = white, not greater = black 
+// var elevGt1500 = dataset.gt(1500); // filters pixels to show only those with an elevation greater than 1500 
+// Map.addLayer(elevGt1500); // binary output, greater than 1500 = white, not greater = black 
 
-var elevGt1500 = dataset.gt(1500).selfMask();
-Map.addLayer(elevGt1500); // masks every 0 value (not greater than 1500m) out of the image - better for visualistics and means no other operations performed are applied to it 
+// var elevGt1500 = dataset.gt(1500).selfMask();
+// Map.addLayer(elevGt1500); // masks every 0 value (not greater than 1500m) out of the image - better for visualistics and means no other operations performed are applied to it 
 
-Map.addLayer(elevGt1500.selfMask(), {palette:'fuchsia'}, 'GT 1500m',true, 0.7);
+// Map.addLayer(elevGt1500.selfMask(), {palette:'fuchsia'}, 'GT 1500m',true, 0.7);
 
-var terrain = ee.Terrain.products(dataset); // use terrain (algorithm that returns several topographic variables from an elevation image)
-print('Terrain',terrain); // four bands within - elevation, slope, aspect, hillshade
+// var terrain = ee.Terrain.products(dataset); // use terrain (algorithm that returns several topographic variables from an elevation image)
+// print('Terrain',terrain); // four bands within - elevation, slope, aspect, hillshade
 
-var slope = terrain.select(['slope']); // create images from the bands (within terrain) that we are interested in
-var hillshade = terrain.select(['hillshade']); 
-Map.addLayer(hillshade);
-Map.addLayer(slope,{palette: ['white','darkblue','black'],min:0,max:45},'slope');
+// var slope = terrain.select(['slope']); // create images from the bands (within terrain) that we are interested in
+// var hillshade = terrain.select(['hillshade']); 
+// Map.addLayer(hillshade);
+// Map.addLayer(slope,{palette: ['white','darkblue','black'],min:0,max:45},'slope');
 
-// 
-// Spatial Reducers 
-// 
+// // 
+// // Spatial Reducers 
+// // 
 
-var taranaki = protected_area.filter(ee.Filter.eq('NAME','Egmont National Park')); // uncommented protected_area creation in code above 
-Map.addLayer(taranaki, {color:'orange'},'Mt Taranaki')
+// var taranaki = protected_area.filter(ee.Filter.eq('NAME','Egmont National Park')); // uncommented protected_area creation in code above 
+// Map.addLayer(taranaki, {color:'orange'},'Mt Taranaki')
 
-var slopeOutput = slope.reduceRegion({ // apply spatial reducer to estimate mean slope of Mt Taranki NP
-  reducer:ee.Reducer.mean(), // compute mean of all slope pixel values in NP 
-  geometry: taranaki, //the geometry we created above
-  scale: 90 // pixel size in metres (from NP metadata)
-})
-print('slopeOutput',slopeOutput) // mean slope = 10.036 degrees 
+// var slopeOutput = slope.reduceRegion({ // apply spatial reducer to estimate mean slope of Mt Taranki NP
+//   reducer:ee.Reducer.mean(), // compute mean of all slope pixel values in NP 
+//   geometry: taranaki, //the geometry we created above
+//   scale: 90 // pixel size in metres (from NP metadata)
+// })
+// print('slopeOutput',slopeOutput) // mean slope = 10.036 degrees 
 
-// In ArcGIS, would clip the elevation (STRM) layer first to the Mt Taranaki NP - compare whether clipping first or just applying 'geometry' argument reduces the analysis 
+// // In ArcGIS, would clip the elevation (STRM) layer first to the Mt Taranaki NP - compare whether clipping first or just applying 'geometry' argument reduces the analysis 
 
-var taranakiSlope = slope.clip(taranaki);
-Map.addLayer(taranakiSlope,{palette: ['white','darkblue','black'],min:0,max:45},'taranaki slope');
+// var taranakiSlope = slope.clip(taranaki);
+// Map.addLayer(taranakiSlope,{palette: ['white','darkblue','black'],min:0,max:45},'taranaki slope');
 
-var slopeOutput2 = taranakiSlope.reduceRegion({
-  reducer: ee.Reducer.mean(),
-  geometry: taranaki,
-  scale: 90
-}); // generate second slope output using the pre-clipped slope
-print('slopeOutput2',slopeOutput2); // mean slope = 10.036 degrees - same as using the geometry to clip (as output one)
+// var slopeOutput2 = taranakiSlope.reduceRegion({
+//   reducer: ee.Reducer.mean(),
+//   geometry: taranaki,
+//   scale: 90
+// }); // generate second slope output using the pre-clipped slope
+// print('slopeOutput2',slopeOutput2); // mean slope = 10.036 degrees - same as using the geometry to clip (as output one)
 
-var elevOutput_Max = dataset.reduceRegion({
-  reducer:ee.Reducer.max(),
-  geometry: taranaki,
-  scale: 90
-});
-print('elevOutput_Max',elevOutput_Max); // max elevation = 2484m 
+// var elevOutput_Max = dataset.reduceRegion({
+//   reducer:ee.Reducer.max(),
+//   geometry: taranaki,
+//   scale: 90
+// });
+// print('elevOutput_Max',elevOutput_Max); // max elevation = 2484m 
 
-var elevOutput_Min = dataset.reduceRegion({
-  reducer:ee.Reducer.min(),
-  geometry:taranaki, 
-  scale: 90
-}); 
-print('elevOutput_Min',elevOutput_Min) // min elevation = 108m 
+// var elevOutput_Min = dataset.reduceRegion({
+//   reducer:ee.Reducer.min(),
+//   geometry:taranaki, 
+//   scale: 90
+// }); 
+// print('elevOutput_Min',elevOutput_Min) // min elevation = 108m 
 
-// LOTS of different reducers available 
+// // LOTS of different reducers available 
 
-var elevOutput_MinMax = dataset.reduceRegion({
-  reducer:ee.Reducer.minMax(), // different reducer - calculates min and max in one command!!
-  geometry: taranaki,
-  scale:90
-}); 
-print('elevOutput_MinMax',elevOutput_MinMax) // max = 2484m, min = 108m 
+// var elevOutput_MinMax = dataset.reduceRegion({
+//   reducer:ee.Reducer.minMax(), // different reducer - calculates min and max in one command!!
+//   geometry: taranaki,
+//   scale:90
+// }); 
+// print('elevOutput_MinMax',elevOutput_MinMax) // max = 2484m, min = 108m 
 
-// EXAMPLE: finding the area (km2) of Mt Taranaki NP that is above 1500m elevation threshold 
+// // EXAMPLE: finding the area (km2) of Mt Taranaki NP that is above 1500m elevation threshold 
 
-var areaGt1500m = elevGt1500 
-  .multiply(ee.Image.pixelArea()) // generates area of each pixel 
-  .reduceRegion({
-    reducer:ee.Reducer.sum(), // sum of all pixels together (total area)
-    geometry: taranaki,
-    scale:90 
-  })
-print('The area of Mt Taranaki NP above 1500m (m2)',areaGt1500m) // area >1500m = 11,474,443.341m2
-print('The area of Mt Taranaki NP above 1500m (km2)', ee.Number(areaGt1500m.get('elevation')).divide(1000*1000)) // area >1500m = 11.474km2
+// var areaGt1500m = elevGt1500 
+//   .multiply(ee.Image.pixelArea()) // generates area of each pixel 
+//   .reduceRegion({
+//     reducer:ee.Reducer.sum(), // sum of all pixels together (total area)
+//     geometry: taranaki,
+//     scale:90 
+//   })
+// print('The area of Mt Taranaki NP above 1500m (m2)',areaGt1500m) // area >1500m = 11,474,443.341m2
+// print('The area of Mt Taranaki NP above 1500m (km2)', ee.Number(areaGt1500m.get('elevation')).divide(1000*1000)) // area >1500m = 11.474km2
 
-//
-// Image Reducers 
-//
+// //
+// // Image Reducers 
+// //
 
-var dataset = ee.ImageCollection('WORLDCLIM/V1/MONTHLY'); 
-print(dataset); // image collection, 12 images (temperature for each month)
+// var dataset = ee.ImageCollection('WORLDCLIM/V1/MONTHLY'); 
+// print(dataset); // image collection, 12 images (temperature for each month)
 
-var jan_climate = ee.Image('WORLDCLIM/V1/MONTHLY/01');
-var july_climate = ee.Image('WORLDCLIM/V1/MONTHLY/07');
+// var jan_climate = ee.Image('WORLDCLIM/V1/MONTHLY/01');
+// var july_climate = ee.Image('WORLDCLIM/V1/MONTHLY/07');
 
-var jan_climate_avg = jan_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
-var july_climate_avg = july_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
+// var jan_climate_avg = jan_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
+// var july_climate_avg = july_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
 
-var meanTemperatureVis = {
-  min: -40, 
-  max: 30, 
-  palette: ['blue','purple','cyan','green','yellow','red'],
-};
+// var meanTemperatureVis = {
+//   min: -40, 
+//   max: 30, 
+//   palette: ['blue','purple','cyan','green','yellow','red'],
+// };
 
-Map.addLayer(jan_climate_avg, meanTemperatureVis,'janClimate');
-Map.addLayer(july_climate_avg,meanTemperatureVis,'julyClimate'); 
+// Map.addLayer(jan_climate_avg, meanTemperatureVis,'janClimate');
+// Map.addLayer(july_climate_avg,meanTemperatureVis,'julyClimate'); 
 
-var annualMeanTemperature = dataset // generating an annual average 
-  .select('tavg')
-  .mean() // reducer
-  .multiply(0.1); // scale pixels to correct values 
+// var annualMeanTemperature = dataset // generating an annual average 
+//   .select('tavg')
+//   .mean() // reducer
+//   .multiply(0.1); // scale pixels to correct values 
 
-Map.setCenter(71.7,52.4,3); // set map centre to central Europe 
-Map.addLayer(annualMeanTemperature,meanTemperatureVis,'Mean Annual Temperature'); 
+// Map.setCenter(71.7,52.4,3); // set map centre to central Europe 
+// Map.addLayer(annualMeanTemperature,meanTemperatureVis,'Mean Annual Temperature'); 
 
-var dataset = ee.ImageCollection('LANDSAT/LC08/C02/T1_TOA')
-  .filterDate('2017-01-01','2017-12-31'); // filter to only images from 2017
+// var dataset = ee.ImageCollection('LANDSAT/LC08/C02/T1_TOA')
+//   .filterDate('2017-01-01','2017-12-31'); // filter to only images from 2017
 
-var trueColour = dataset.select(['B4','B3','B2']);
-var trueColourVis = {
-  min: 0.0,
-  max: 0.4
-};
-Map.setCenter(146.746,-19.529,9); // set the centre to Townsville
-Map.addLayer(trueColour,trueColourVis,'True Colour Landsat'); // 63 images in our collection (using inspector, clicked on approx location of JCU Townsville campus)
+// var trueColour = dataset.select(['B4','B3','B2']);
+// var trueColourVis = {
+//   min: 0.0,
+//   max: 0.4
+// };
+// Map.setCenter(146.746,-19.529,9); // set the centre to Townsville
+// Map.addLayer(trueColour,trueColourVis,'True Colour Landsat'); // 63 images in our collection (using inspector, clicked on approx location of JCU Townsville campus)
 
-var LandsatMedian = trueColour.median(); // using .median() reduced to find the median pixel in all 63 images
-Map.addLayer(LandsatMedian,trueColourVis,'True Colour Median'); // clouds removed!! 
-
+// var LandsatMedian = trueColour.median(); // using .median() reduced to find the median pixel in all 63 images
+// Map.addLayer(LandsatMedian,trueColourVis,'True Colour Median'); // clouds removed!! 
 
 
 
