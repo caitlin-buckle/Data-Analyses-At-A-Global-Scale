@@ -1,3 +1,17 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var testarea = 
+    /* color: #12ff1f */
+    /* displayProperties: [
+      {
+        "type": "rectangle"
+      }
+    ] */
+    ee.Geometry.Polygon(
+        [[[124.57250550401113, 36.88295454668949],
+          [124.57250550401113, 33.28810419917295],
+          [127.20922425401113, 33.28810419917295],
+          [127.20922425401113, 36.88295454668949]]], null, false);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
 //*******************************//
 // MB5370 Module Four Workshop Three  
 //*******************************//
@@ -52,9 +66,12 @@ Map.addLayer(nl_2013,{palette:["0B192C", "1E3E62",  "384B70", "5D4E6D",  "C2410C
 var coast = ee.FeatureCollection('projects/UQ_intertidal/dataMasks/naturalEarthCoastline_v1')
 Map.addLayer(coast,{color:'yellow'},'coast')
 
-var coastgrid = grid.filter(ee.Filter.bounds(coast));
+var coastgrid = grid 
+.filter(ee.Filter.bounds(coast))
+.filter(ee.Filter.bounds(testarea));// TEST AREA TO DELETE LATER (geometry - polygon) limits the size of the analysis, takes a long time to run full analysis so only do that at the end
 Map.addLayer(coastgrid,{color:"0090fe"},'coastgrid'); // going to analyse human impact within these regions (likely to have mangroves) - removes areas where mangroves are not likely to occur at all
 
+// created geometry (green box called 'testarea'), filtered coastgrids to only include 4 that are included in the box. 
 
 
 
