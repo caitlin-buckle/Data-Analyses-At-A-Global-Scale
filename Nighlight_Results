@@ -22,5 +22,5 @@ var nl_changePerCoastgrid = empty.paint({
   color:'mean'
 }); 
 
-Map.addLayer(nl_changePerCoastgrid,{max:8,palette: ['green','yellow','orange','red']},'nl_Change_result'); 
+Map.addLayer(nl_changePerCoastgrid,{max:8,palette: ['blue','green','yellow','orange','red']},'nl_Change_result'); 
 
