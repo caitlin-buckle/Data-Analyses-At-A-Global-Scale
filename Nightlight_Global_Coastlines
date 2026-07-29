@@ -1,0 +1,40 @@
+//*******************************//
+// MB5370 Module Four Workshop Three  
+//*******************************//
+
+// Nighlights in Global Coastlines Analysis 
+
+var population = ee.ImageCollection("CIESIN/GPWv411/GPW_Population_Count");
+print (population);
+
+var pop_2000 = ee.Image("CIESIN/GPWv411/GPW_Population_Count/gpw_v4_population_count_rev11_2000_30_sec");
+print(pop_2000);
+
+var pop_2015 = ee.Image("CIESIN/GPWv411/GPW_Population_Count/gpw_v4_population_count_rev11_2015_30_sec");
+print(pop_2015);
+
+var pop_vis = {
+  min:0.0, 
+  max:1000.0, 
+  palette: [
+    'ffffe7',
+    '86a192',
+    '509791',
+    '307296',
+    '2c4484',
+    '000066'], 
+};
+
+Map.addLayer(pop_2000, pop_vis, 'Population Count 2000'); 
+Map.addLayer(pop_2015, pop_vis, 'Population Count 2015');
+// layers for population change (2000 vs 2015) 
+
+var nightlight = ee.ImageCollection("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS");
+print(nightlight);
+
+var nl_2000 = ee.Image("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS/F142000");
+var nl_2013 = ee.Image("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS/F182013");
+print(nl_2000);
+print(nl_2013);
+
+
