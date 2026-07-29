@@ -4,6 +4,10 @@
 
 // Nighlights in Global Coastlines Analysis 
 
+// Grid Analysis 
+var grid = ee.FeatureCollection('users/murrnick/mb5370/worldgrid_5deg');
+Map.addLayer(grid, {color: 'white'},'grid',false, 0.4); 
+
 var population = ee.ImageCollection("CIESIN/GPWv411/GPW_Population_Count");
 print (population);
 
@@ -36,5 +40,22 @@ var nl_2000 = ee.Image("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS/F142000");
 var nl_2013 = ee.Image("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS/F182013");
 print(nl_2000);
 print(nl_2013);
+
+var nl_2000 = ee.Image("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS/F142000").select(['avg_vis'],['nightlight']); // select and rename 
+var nl_2013 = ee.Image("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS/F182013").select(['avg.vis'],['nighlight']);
+print ('nightlight 2000 processed', nl_2000);
+print('nightlight 2013 processed', nl_2013); 
+
+Map.addLayer(nl_2000,{palette:["0B192C", "1E3E62",  "384B70", "5D4E6D",  "C2410C","FF5F00"],min:5,max:60},'nl_2000',true,0.8);
+Map.addLayer(nl_2013,{palette:["0B192C", "1E3E62",  "384B70", "5D4E6D",  "C2410C","FF5F00"],min:5, max:60},'nl_2013',true,0.8);
+
+var coast = ee.FeatureCollection('projects/UQ_intertidal/dataMasks/naturalEarthCoastline_v1')
+Map.addLayer(coast,{color:'yellow'},'coast')
+
+var coastgrid = grid.filter(ee.Filter.bounds(coast));
+Map.addLayer(coastgrid,{color:"0090fe"},'coastgrid'); // going to analyse human impact within these regions (likely to have mangroves) - removes areas where mangroves are not likely to occur at all
+
+
+
 
 
