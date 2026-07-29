@@ -1,0 +1,3 @@
+var pop_result = ee.FeatureCollection(projects/mb5370-first-project/assets/pop_changePerCoastgrid)
+Map.addLayer(pop_result)
+print(pop_result)
