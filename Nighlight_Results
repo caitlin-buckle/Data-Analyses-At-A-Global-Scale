@@ -9,4 +9,4 @@ var pop_changePerCoastgrid = empty.paint({
   color:'mean'
 });
 
-Map.addLayer(pop_changePerCoastgrid,{max:112,palette: ['green','yellow','orange','red']},'popChange_result')
+Map.addLayer(pop_changePerCoastgrid,{max:112,palette: ['green','yellow','orange','red']},'popChange_result'); 
