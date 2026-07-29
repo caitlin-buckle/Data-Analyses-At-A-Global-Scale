@@ -10,3 +10,17 @@ var pop_changePerCoastgrid = empty.paint({
 });
 
 Map.addLayer(pop_changePerCoastgrid,{max:112,palette: ['green','yellow','orange','red']},'popChange_result'); 
+
+var nl_result = ee.FeatureCollection('projects/mb5370-first-project/assets/nl_changePerCoastgrid');
+Map.addLayer(nl_result); 
+print(nl_result); 
+
+var empty2 = ee.Image().byte(); 
+var palette = ['green','yellow','orange,','red'];
+var nl_changePerCoastgrid = empty.paint({
+  featureCollection:nl_result,
+  color:'mean'
+}); 
+
+Map.addLayer(nl_changePerCoastgrid,{max:8,palette: ['green','yellow','orange','red']},'nl_Change_result'); 
+
