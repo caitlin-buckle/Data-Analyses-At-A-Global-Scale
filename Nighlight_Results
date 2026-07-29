@@ -1,3 +1,12 @@
-var pop_result = ee.FeatureCollection(projects/mb5370-first-project/assets/pop_changePerCoastgrid)
-Map.addLayer(pop_result)
-print(pop_result)
+var pop_result = ee.FeatureCollection('projects/mb5370-first-project/assets/pop_changePerCoastgrid');
+Map.addLayer(pop_result);
+print(pop_result);
+
+var empty = ee.Image().byte() ;
+var palette = ['green','yellow','orange,','red'];
+var pop_changePerCoastgrid = empty.paint({
+  featureCollection:pop_result,
+  color:'mean'
+});
+
+Map.addLayer(pop_changePerCoastgrid,{max:112,palette: ['green','yellow','orange','red']},'popChange_result')
