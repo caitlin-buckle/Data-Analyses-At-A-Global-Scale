@@ -1,6 +1,7 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var testarea = 
     /* color: #12ff1f */
+    /* shown: false */
     /* displayProperties: [
       {
         "type": "rectangle"
@@ -68,11 +69,49 @@ Map.addLayer(coast,{color:'yellow'},'coast')
 
 var coastgrid = grid 
 .filter(ee.Filter.bounds(coast))
-.filter(ee.Filter.bounds(testarea));// TEST AREA TO DELETE LATER (geometry - polygon) limits the size of the analysis, takes a long time to run full analysis so only do that at the end
+// .filter(ee.Filter.bounds(testarea));// TEST AREA TO DELETE LATER (geometry - polygon) limits the size of the analysis, takes a long time to run full analysis so only do that at the end
 Map.addLayer(coastgrid,{color:"0090fe"},'coastgrid'); // going to analyse human impact within these regions (likely to have mangroves) - removes areas where mangroves are not likely to occur at all
 
 // created geometry (green box called 'testarea'), filtered coastgrids to only include 4 that are included in the box. 
 
+var pop_change = pop_2015
+  .subtract(pop_2000)
+  .clip(coastgrid);
+Map.addLayer(pop_change,{palette: ['darkblue','blue','lightblue'],min:-500, max:500},'pop_change',true, 0.9);
 
+var nl_change = nl_2013
+  .subtract(nl_2000)
+  .clip(coastgrid);
+Map.addLayer(nl_change,{palette: ['darkgreen','white','lightgreen'],min:-50,max:50},'nl_change',true,0.9);
 
+// average change in nightlights per ecoregion 
+
+var nl_changePerCoastgrid = nl_change.reduceRegions({
+  collection: coastgrid,
+  reducer:ee.Reducer.mean(), 
+  scale: 1000, // computing at a larger scale for speed 
+});
+print(nl_changePerCoastgrid.first()); // mean = 5.875
+
+var pop_changePerCoastgrid = pop_change.reduceRegions({
+  collection: coastgrid,
+  reducer:ee.Reducer.mean(), 
+  scale: 1000, // computing at a larger scale for speed 
+});
+
+// Global Analysis 
+// Export the results (analyse in batch mode) - slower but allows your analyses to proceed by removing some of the limitations that are applied when running it interactively 
+
+// Export the results to asset 
+Export.table.toAsset({
+  collection: pop_changePerCoastgrid, 
+  description: 'export_pop_toAsset',
+  assetId: 'pop_changePerCoastgrid'
+}); 
+
+Export.table.toAsset({
+  collection:nl_changePerCoastgrid,
+  description: 'export_nl_toAsset',
+  assetId: 'nl_changePerCoastgrid'
+}); 
 
