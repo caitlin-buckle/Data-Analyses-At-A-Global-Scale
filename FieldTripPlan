@@ -115,5 +115,25 @@ var cleaner = function (feature){
   return feature.set(clean)
 }
 
-var cleaned_result = area_out.map(cleaner).sort('area_km2',false)
-print(cleaned_result,'cleaned')
+var cleaned_result = area_out.map(cleaner).sort('area_km2',false);
+print(cleaned_result,'cleaned');
+
+// Export results to my computer 
+
+Export.table.toDrive({
+  collection:cleaned_result,
+  description:'exportToDrive',
+  fileNamePrefix:'research_stations',
+  fileFormat:'CSV'
+});
+
+var exportImage = ACA.clip(orpheus_island)
+Map.addLayer(exportImage)
+
+Export.image.toDrive({
+  image:exportImage,
+  description:'exportImageToDrive',
+  fileNamePrefix: 'aca_orpheus', 
+  fileFormat: 'GeoTIFF',
+  scale:5
+})
