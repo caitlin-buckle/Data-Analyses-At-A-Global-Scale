@@ -66,4 +66,8 @@ print(ACA);
 Map.addLayer(ACA);
 
 // Select the appropriate band to access benthic (not geomorphic data)
-var ACA = ee.Image("ACA/reef_habitat/v2_0").select([benthic]); 
+var benthic = ee.Image("ACA/reef_habitat/v2_0").select('benthic'); 
+print(benthic);
+
+// in benthic band, coral = 5, want to make it so coral/algae = 1 and everything else = 0 
+
