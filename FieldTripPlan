@@ -69,5 +69,27 @@ Map.addLayer(ACA);
 var benthic = ee.Image("ACA/reef_habitat/v2_0").select('benthic'); 
 print(benthic);
 
-// in benthic band, coral = 5, want to make it so coral/algae = 1 and everything else = 0 
+// extract coral cover band from benthic band 
+
+var coral = benthic
+  .eq(15) // pixel value of coral/algae is 15 (found in ACA info in catalogue) - returns 1 if true, 0 if false
+  .selfMask(); // mask out all non-coral/algae pixels (0 values)
+print(coral); 
+
+Map.addLayer(coral,{palette:'coral'},'Coral only'); //add layer with coral and algae
+
+var station_buffer = ee.Feature(field_stations.first()).buffer(800); // buffer around the first feature 
+Map.addLayer(station_buffer,{palette:'yellow'},'Station Buffer');
+
+// To run as a .map - looping over all stations 
+var buffer_loop = function (feature){
+  var buffered = feature.buffer(800) // applies a 800m buffer when given a feature 
+  return buffered;
+}; 
+
+var out = field_stations.map(buffer_loop);
+print(out, 'out'); 
+Map.addLayer(out,{color:'yellow'},'Buffer loop'); 
+
+var areas_pixels = ee.Image(ee.Image.pixelArea()).updateMask(coral);
 
