@@ -78,8 +78,8 @@ print(coral);
 
 Map.addLayer(coral,{palette:'coral'},'Coral only'); //add layer with coral and algae
 
-var station_buffer = ee.Feature(field_stations.first()).buffer(800); // buffer around the first feature 
-Map.addLayer(station_buffer,{palette:'yellow'},'Station Buffer');
+//var station_buffer = ee.Feature(field_stations.first()).buffer(800); // buffer around the first feature 
+//Map.addLayer(station_buffer,{palette:'yellow'},'Station Buffer');
 
 // To run as a .map - looping over all stations 
 var buffer_loop = function (feature){
@@ -91,6 +91,7 @@ var out = field_stations.map(buffer_loop);
 print(out, 'out'); 
 Map.addLayer(out,{color:'yellow'},'Buffer loop'); 
 
+
 var area_pixels = ee.Image(ee.Image.pixelArea()).updateMask(coral);
 
 var area_out = area_pixels.reduceRegions({
@@ -99,7 +100,8 @@ var area_out = area_pixels.reduceRegions({
   scale:5
 }); 
 
-print(area_out,'area_out'); 
+print(area_out,'area_out'); // area of coral within the station buffer zones
+Map.addLayer(area_out,{color:'green'},'Coral Area')
 
 // Clean it up 
 
