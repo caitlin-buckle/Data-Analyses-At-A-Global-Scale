@@ -91,5 +91,27 @@ var out = field_stations.map(buffer_loop);
 print(out, 'out'); 
 Map.addLayer(out,{color:'yellow'},'Buffer loop'); 
 
-var areas_pixels = ee.Image(ee.Image.pixelArea()).updateMask(coral);
+var area_pixels = ee.Image(ee.Image.pixelArea()).updateMask(coral);
 
+var area_out = area_pixels.reduceRegions({
+  reducer:ee.Reducer.sum(),
+  collection:out, 
+  scale:5
+}); 
+
+print(area_out,'area_out'); 
+
+// Clean it up 
+
+var cleaner = function (feature){
+  var clean = {
+    station_name: feature.get('Field_Station'),
+    area_m2: ee.Number(feature.get('sum')),
+    area_km2:ee.Number(feature.get('sum')).divide(1000*1000),
+    analyst: 'caitlin'
+  }
+  return feature.set(clean)
+}
+
+var cleaned_result = area_out.map(cleaner).sort('area_km2',false)
+print(cleaned_result,'cleaned')
