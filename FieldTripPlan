@@ -127,8 +127,8 @@ Export.table.toDrive({
   fileFormat:'CSV'
 });
 
-var exportImage = ACA.clip(orpheus_island)
-Map.addLayer(exportImage)
+var exportImage = ACA.clip(orpheus_island);
+Map.addLayer(exportImage);
 
 Export.image.toDrive({
   image:exportImage,
