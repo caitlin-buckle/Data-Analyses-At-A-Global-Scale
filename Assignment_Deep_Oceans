@@ -68,10 +68,26 @@ var linker = ui.Map.Linker([leftMap, rightMap]);
 leftMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
 leftMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
 
+// // 4. Populate the RIGHT map (Ecosystems base + Marine MPAs on top)
+// rightMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
+// rightMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
+// rightMap.addLayer(marineMPAs, {color: 'yellow', fillColor: 'yellow'}, 'Marine Protected Areas');
+
 // 4. Populate the RIGHT map (Ecosystems base + Marine MPAs on top)
 rightMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
 rightMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
-rightMap.addLayer(marineMPAs, {color: 'yellow', fillColor: 'yellow'}, 'Marine Protected Areas');
+
+// // Explicitly style the MPAs as a rasterized image layer for clean rendering
+// var mpaVis = marineMPAs.style({color: 'yellow', fillColor: 'yellow'});
+// rightMap.addLayer(mpaVis, {opacity:0.5}, 'Marine Protected Areas');
+
+var mpaVis = marineMPAs.style({
+  color: 'yellow',        // Opaque yellow border
+  fillColor: 'FFFF0066',  // Yellow with ~40% opacity fill (the '66' at the end is alpha)
+  width: 1                // Optional: adjust border line thickness if needed
+});
+
+rightMap.addLayer(mpaVis, {}, 'Marine Protected Areas');
 
 // 5. Create the split panel with the vertical wipe slider
 var splitPanel = ui.SplitPanel({
@@ -85,3 +101,59 @@ var splitPanel = ui.SplitPanel({
 ui.root.widgets().reset([splitPanel]);
 
 leftMap.setCenter(133, -25, 4);
+
+// ADDING A LEGEND // 
+
+
+// --- CREATE A LEGEND ---
+var legend = ui.Panel({
+  style: {
+    position: 'bottom-left',
+    padding: '8px 15px'
+  }
+});
+
+// Create legend title
+var legendTitle = ui.Label({
+  value: 'Map Legend',
+  style: {
+    fontWeight: 'bold',
+    fontSize: '16px',
+    margin: '0 0 4px 0',
+    padding: '0'
+  }
+});
+legend.add(legendTitle);
+
+// Helper function to add a color box and label to the legend
+var addLegendItem = function(color, text) {
+  var colorBox = ui.Label({
+    style: {
+      backgroundColor: color,
+      padding: '8px',
+      margin: '0 4px 4px 0'
+    }
+  });
+  
+  var description = ui.Label({
+    value: text,
+    style: {margin: '0 0 4px 6px'}
+  });
+  
+  return ui.Panel({
+    widgets: [colorBox, description],
+    layout: ui.Panel.Layout.Flow('horizontal')
+  });
+};
+
+// Add ecosystem items (matching your palette: ['66ffd9','66b3ff','0044cc','001133'])
+legend.add(addLegendItem('#66ffd9', 'Submarine Canyon (>200m, Slope >6°)'));
+legend.add(addLegendItem('#66b3ff', 'Continental Slope (250m - 3000m)'));
+legend.add(addLegendItem('#0044cc', 'Abyssal Plains (3000m - 6000m)'));
+legend.add(addLegendItem('#001133', 'Hadal Trench (>6000m)'));
+
+// Add Marine Protected Areas item
+legend.add(addLegendItem('yellow', 'Protected Areas'));
+
+// Add the legend to your leftMap (it will appear on the split panel screen)
+leftMap.add(legend);
