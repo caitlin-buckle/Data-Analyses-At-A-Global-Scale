@@ -1,5 +1,5 @@
 var pop_result = ee.FeatureCollection('projects/mb5370-first-project/assets/pop_changePerCoastgrid');
-Map.addLayer(pop_result);
+//Map.addLayer(pop_result);
 print(pop_result);
 
 var empty = ee.Image().byte() ;
@@ -9,20 +9,13 @@ var pop_changePerCoastgrid = empty.paint({
   color:'mean'
 });
 
-Map.addLayer(pop_changePerCoastgrid,{max:112,palette:['#0047AB',
-    '#1E63C3',
-    '#3B7FDB',
-    '#589BF2',
-    '#80C285',
-    '#B4D66E',
-    '#E5C048',
-    '#E98F3A',
-    '#D95336',
-    '#CC0000'
-  ]}, 'popChange_result', true,0.8);
+var snazzy = require("users/aazuspan/snazzy:styles");
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map","Blank Map");
+
+Map.addLayer(pop_changePerCoastgrid,{max:112,palette:['#0047AB','#1E63C3','#3B7FDB','#589BF2','#80C285','#B4D66E','#E5C048','#E98F3A','#D95336','#CC0000']},'Population Change Results', true,0.9);
 
 var nl_result = ee.FeatureCollection('projects/mb5370-first-project/assets/nl_changePerCoastgrid');
-Map.addLayer(nl_result); 
+//Map.addLayer(nl_result); 
 print(nl_result); 
 
 var empty2 = ee.Image().byte(); 
@@ -32,5 +25,5 @@ var nl_changePerCoastgrid = empty.paint({
   color:'mean'
 }); 
 
-Map.addLayer(nl_changePerCoastgrid,{max:8,palette: ['blue','green','yellow','orange','red']},'nl_Change_result'); 
+Map.addLayer(nl_changePerCoastgrid,{max:8,palette: ['#0047AB','#1E63C3','#3B7FDB','#589BF2','#80C285','#B4D66E','#E5C048','#E98F3A','#D95336','#CC0000']},'Nightlight Change Result',true,0.9); 
 
