@@ -106,7 +106,7 @@ var coral = benthic
   .selfMask(); // mask out all non-coral/algae pixels (0 values)
 print(coral); 
 
-Map.addLayer(coral,{palette:'coral'},'Coral/Algae Only'); // add layer with coral and algae
+Map.addLayer(coral,{palette:'coral'},' ACA Coral/Algae Only'); // add layer with coral and algae
 
 //var station_buffer = ee.Feature(field_stations.first()).buffer(800); // buffer around the first feature 
 //Map.addLayer(station_buffer,{palette:'yellow'},'Station Buffer');
