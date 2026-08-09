@@ -100,7 +100,9 @@ var splitPanel = ui.SplitPanel({
 // 6. Replace the Code Editor display with the split panel app once
 ui.root.widgets().reset([splitPanel]);
 
+//leftMap.setCenter(133, -25, 4);
 leftMap.setCenter(133, -25, 4);
+rightMap.setCenter(133, -25, 4);
 
 // ADDING A LEGEND // 
 
@@ -151,10 +153,10 @@ legend.add(addLegendItem('#66ffd9', 'Submarine Canyon (>200m, Slope >6°)'));
 legend.add(addLegendItem('#66b3ff', 'Continental Slope (250m - 3000m)'));
 legend.add(addLegendItem('#0044cc', 'Abyssal Plains (3000m - 6000m)'));
 legend.add(addLegendItem('#001133', 'Hadal Trench (>6000m)'));
-
-// Add Marine Protected Areas item
 legend.add(addLegendItem('yellow', 'Protected Areas'));
 
-// ATTACH TO ROOT INSTEAD OF LEFTMAP:
-// This forces the legend to sit globally on top of the entire app window layout
-ui.root.add(legend);
+// Add legend directly to the right map pane so it renders inside the app layout
+rightMap.add(legend);
+
+// 6. Replace the Code Editor display with the split panel app once
+ui.root.widgets().reset([splitPanel]);
