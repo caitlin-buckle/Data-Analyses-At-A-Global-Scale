@@ -102,9 +102,6 @@ var splitPanel = ui.SplitPanel({
 // 6. Replace the Code Editor display with the split panel app once
 ui.root.widgets().reset([splitPanel]);
 
-//leftMap.setCenter(133, -25, 4);
-//rightMap.setCenter(133, -25, 4);
-
 // --- CREATE A LEGEND ---
 var legend = ui.Panel({
   style: {
