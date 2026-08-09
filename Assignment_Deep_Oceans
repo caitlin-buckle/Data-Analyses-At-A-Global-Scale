@@ -104,68 +104,56 @@ ui.root.widgets().reset([splitPanel]);
 leftMap.setCenter(133, -25, 4);
 rightMap.setCenter(133, -25, 4);
 
-// ADDING A LEGEND // 
-
-
 // --- CREATE A LEGEND ---
-// var legend = ui.Panel({
-//   style: {
-//     position: 'bottom-left',
-//     padding: '8px 15px'
-//   }
-// });
+var legend = ui.Panel({
+  style: {
+    position: 'bottom-left',
+    padding: '8px 15px'
+  }
+});
 
 // Create legend title
-// var legendTitle = ui.Label({
-//   value: 'Map Legend',
-//   style: {
-//     fontWeight: 'bold',
-//     fontSize: '16px',
-//     margin: '0 0 4px 0',
-//     padding: '0'
-//   }
-// });
-// legend.add(legendTitle);
+var legendTitle = ui.Label({
+  value: 'Map Legend',
+  style: {
+    fontWeight: 'bold',
+    fontSize: '16px',
+    margin: '0 0 4px 0',
+    padding: '0'
+  }
+});
+legend.add(legendTitle);
 
 // Helper function to add a color box and label to the legend
-// var addLegendItem = function(color, text) {
-//   var colorBox = ui.Label({
-//     style: {
-//       backgroundColor: color,
-//       padding: '8px',
-//       margin: '0 4px 4px 0'
-//     }
-//   });
+var addLegendItem = function(color, text) {
+  var colorBox = ui.Label({
+    style: {
+      backgroundColor: color,
+      padding: '8px',
+      margin: '0 4px 4px 0'
+    }
+  });
   
-//   var description = ui.Label({
-//     value: text,
-//     style: {margin: '0 0 4px 6px'}
-//   });
+  var description = ui.Label({
+    value: text,
+    style: {margin: '0 0 4px 6px'}
+  });
   
-//   return ui.Panel({
-//     widgets: [colorBox, description],
-//     layout: ui.Panel.Layout.Flow('horizontal')
-//   });
-// };
+  return ui.Panel({
+    widgets: [colorBox, description],
+    layout: ui.Panel.Layout.Flow('horizontal')
+  });
+};
 
 // Add ecosystem items (matching your palette: ['66ffd9','66b3ff','0044cc','001133'])
-// legend.add(addLegendItem('#66ffd9', 'Submarine Canyon (>200m, Slope >6°)'));
-// legend.add(addLegendItem('#66b3ff', 'Continental Slope (250m - 3000m)'));
-// legend.add(addLegendItem('#0044cc', 'Abyssal Plains (3000m - 6000m)'));
-// legend.add(addLegendItem('#001133', 'Hadal Trench (>6000m)'));
-// legend.add(addLegendItem('yellow', 'Protected Areas'));
+legend.add(addLegendItem('#66ffd9', 'Submarine Canyon (>200m, Slope >6°)'));
+legend.add(addLegendItem('#66b3ff', 'Continental Slope (250m - 3000m)'));
+legend.add(addLegendItem('#0044cc', 'Abyssal Plains (3000m - 6000m)'));
+legend.add(addLegendItem('#001133', 'Hadal Trench (>6000m)'));
+legend.add(addLegendItem('yellow', 'Marine Protected Areas'));
 
-// Add legend directly to the right map pane so it renders inside the app layout
-// rightMap.add(legend);
+// Add legend directly to the right map pane so it renders inside the split app
+rightMap.add(legend);
 
-// 6. Replace the Code Editor display with the split panel app once
-// ui.root.widgets().reset([splitPanel]);
-
-// leftMap.add(legend);
-
-// 6. Replace the Code Editor display with the split panel app once
-// ui.root.widgets().reset([splitPanel]);
-
-// leftMap.add(legend);
-
+// 6. Replace the Code Editor display with the split panel app once at the very end
 ui.root.widgets().reset([splitPanel]);
