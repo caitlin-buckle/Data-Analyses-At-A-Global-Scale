@@ -27,3 +27,4 @@ var nl_changePerCoastgrid = empty.paint({
 
 Map.addLayer(nl_changePerCoastgrid,{max:8,palette: ['#0047AB','#1E63C3','#3B7FDB','#589BF2','#80C285','#B4D66E','#E5C048','#E98F3A','#D95336','#CC0000']},'Nightlight Change Result',true,0.9); 
 
+Map.setCenter(127.7669, 35.9078, 3);
