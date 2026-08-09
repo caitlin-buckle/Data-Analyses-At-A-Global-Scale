@@ -1,41 +1,62 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var hamilton_island = /* color: #11c2ae */ee.Feature(
+var hamilton_island = 
+    /* color: #11c2ae */
+    /* shown: false */
+    ee.Feature(
         ee.Geometry.Point([148.95767591667175, -20.346558299298398]),
         {
           "station": "'Hamilton Island'",
           "system:index": "0"
         }),
-    heron_island = /* color: #c1ff18 */ee.Feature(
+    heron_island = 
+    /* color: #c1ff18 */
+    /* shown: false */
+    ee.Feature(
         ee.Geometry.Point([151.91127487564088, -23.442048316593418]),
         {
           "station": "'Heron Island'",
           "system:index": "0"
         }),
-    lizard_island = /* color: #c21eff */ee.Feature(
+    lizard_island = 
+    /* color: #c21eff */
+    /* shown: false */
+    ee.Feature(
         ee.Geometry.Point([145.4463433227539, -14.667714572471915]),
         {
           "station": "'Lizard Island'",
           "system:index": "0"
         }),
-    daydream_island = /* color: #e76511 */ee.Feature(
+    daydream_island = 
+    /* color: #e76511 */
+    /* shown: false */
+    ee.Feature(
         ee.Geometry.Point([148.81583906745914, -20.25176345889179]),
         {
           "station": "'Daydream Island'",
           "system:index": "0"
         }),
-    orpheus_island = /* color: #1afaff */ee.Feature(
+    orpheus_island = 
+    /* color: #1afaff */
+    /* shown: false */
+    ee.Feature(
         ee.Geometry.Point([146.48983504591294, -18.612940656473658]),
         {
           "station": "'Orpheus Island'",
           "system:index": "0"
         }),
-    kimberley_station = /* color: #1e92ff */ee.Feature(
+    kimberley_station = 
+    /* color: #1e92ff */
+    /* shown: false */
+    ee.Feature(
         ee.Geometry.Point([123.00976396560671, -16.4525299120754]),
         {
           "station": "'Kimberley Marine Research Station'",
           "system:index": "0"
         }),
-    coral_bay = /* color: #0000ff */ee.Feature(
+    coral_bay = 
+    /* color: #0000ff */
+    /* shown: false */
+    ee.Feature(
         ee.Geometry.Point([113.76939119273432, -23.142234535159165]),
         {
           "station": "'Coral Bay Research Station'",
@@ -52,11 +73,21 @@ var hamilton_island = /* color: #11c2ae */ee.Feature(
 
 var distance = 800; // 800m allowed to snorkel from the station 
 
+// Add field station geometries as map layer so can see them in an app 
+Map.addLayer(hamilton_island, {color: 'red'}, 'Hamilton Island');
+Map.addLayer(heron_island, {color: 'blue'}, 'Heron Island');
+Map.addLayer(lizard_island, {color: '00FF00'}, 'Lizard Island');
+Map.addLayer(daydream_island, {color: 'yellow'}, 'Daydream Island');
+Map.addLayer(orpheus_island, {color: 'orange'}, 'Orpheus Island');
+Map.addLayer(kimberley_station, {color: 'purple'}, 'Kimberley Station');
+Map.addLayer(coral_bay, {color: 'FF007F'}, 'Coral Bay');
+
 Map.setOptions('SATELLITE'); 
 // Map.setCenter(113.7764,-23.1447,17); // used to find the different research stations
 
 var field_stations = ee.FeatureCollection([hamilton_island,heron_island,lizard_island,daydream_island,orpheus_island,kimberley_station,coral_bay]);
 print(field_stations);
+
 
 // import Allen coral atlas (ACA) data into GEE
 
