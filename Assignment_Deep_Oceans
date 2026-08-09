@@ -7,7 +7,7 @@ var slope = ee.Terrain.slope(dataset); // calculate slope from ETOPO1 dataset
 
 var hadalTrench = dataset.lt(-6000); // hadal trenches and troughts, >6000m
 var abyssalPlains = dataset.gt(-6000).and(dataset.lt(-3000)); // abyssal plains, 3000-6000m
-var continentalSlope = dataset.gt(-3000).and(dataset.lt(250)); // continental and island slopes, 250-3000m
+var continentalSlope = dataset.gt(-3000).and(dataset.lt(-250)); // continental and island slopes, 250-3000m
 var submarineCanyon = dataset.lt(-200).and(slope.gt(6)); // submarine canyons, deeper than 200m and slopes of >6 degrees
 
 var ocean_ecosystem = ee.Image(0)
