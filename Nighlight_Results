@@ -9,7 +9,17 @@ var pop_changePerCoastgrid = empty.paint({
   color:'mean'
 });
 
-Map.addLayer(pop_changePerCoastgrid,{max:112,palette: ['green','yellow','orange','red']},'popChange_result'); 
+Map.addLayer(pop_changePerCoastgrid,{max:112,palette:['#0047AB',
+    '#1E63C3',
+    '#3B7FDB',
+    '#589BF2',
+    '#80C285',
+    '#B4D66E',
+    '#E5C048',
+    '#E98F3A',
+    '#D95336',
+    '#CC0000'
+  ]}, 'popChange_result', true,0.8);
 
 var nl_result = ee.FeatureCollection('projects/mb5370-first-project/assets/nl_changePerCoastgrid');
 Map.addLayer(nl_result); 
