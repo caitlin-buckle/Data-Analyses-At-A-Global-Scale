@@ -161,7 +161,13 @@ legend.add(addLegendItem('yellow', 'Protected Areas'));
 // 6. Replace the Code Editor display with the split panel app once
 // ui.root.widgets().reset([splitPanel]);
 
-leftMap.add(legend);
+// leftMap.add(legend);
 
 // 6. Replace the Code Editor display with the split panel app once
-ui.root.widgets().reset([splitPanel]);
+// ui.root.widgets().reset([splitPanel]);
+
+leftMap.add(legend);
+
+// 6. FORCE ROOT DISPLAY USING CLEAR AND ADD (Ensures app mode renders it)
+ui.root.clear();
+ui.root.add(splitPanel);
