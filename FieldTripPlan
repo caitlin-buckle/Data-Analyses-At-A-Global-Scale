@@ -119,6 +119,7 @@ var cleaned_result = area_out.map(cleaner).sort('area_km2',false);
 print(cleaned_result,'cleaned');
 
 Map.setCenter(133, -25, 4);
+Map.setZoom(4);
 
 // Export results to my computer 
 
