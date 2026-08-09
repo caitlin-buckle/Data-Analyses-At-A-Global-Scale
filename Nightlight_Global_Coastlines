@@ -61,11 +61,11 @@ var nl_2013 = ee.Image("NOAA/DMSP-OLS/NIGHTTIME_LIGHTS/F182013").select(['avg.vi
 print ('nightlight 2000 processed', nl_2000);
 print('nightlight 2013 processed', nl_2013); 
 
-Map.addLayer(nl_2000,{palette:["0B192C", "1E3E62",  "384B70", "5D4E6D",  "C2410C","FF5F00"],min:5,max:60},'nl_2000',true,0.8);
-Map.addLayer(nl_2013,{palette:["0B192C", "1E3E62",  "384B70", "5D4E6D",  "C2410C","FF5F00"],min:5, max:60},'nl_2013',true,0.8);
+Map.addLayer(nl_2000,{palette:["0B192C", "1E3E62", "384B70", "5D4E6D", "FFB703","FFEE32"],min:5,max:60},'nl_2000',true,0.8);
+Map.addLayer(nl_2013,{palette:["0B192C", "1E3E62", "384B70", "5D4E6D", "FFB703","FFEE32"],min:5, max:60},'nl_2013',true,0.8);
 
-var coast = ee.FeatureCollection('projects/UQ_intertidal/dataMasks/naturalEarthCoastline_v1')
-Map.addLayer(coast,{color:'yellow'},'coast')
+var coast = ee.FeatureCollection('projects/UQ_intertidal/dataMasks/naturalEarthCoastline_v1');
+Map.addLayer(coast,{color:'yellow'},'coast');
 
 var coastgrid = grid 
 .filter(ee.Filter.bounds(coast))
@@ -99,19 +99,21 @@ var pop_changePerCoastgrid = pop_change.reduceRegions({
   scale: 1000, // computing at a larger scale for speed 
 });
 
+Map.setCenter(127.7669, 35.9078, 3);
+
 // Global Analysis 
 // Export the results (analyse in batch mode) - slower but allows your analyses to proceed by removing some of the limitations that are applied when running it interactively 
 
 // Export the results to asset 
-Export.table.toAsset({
-  collection: pop_changePerCoastgrid, 
-  description: 'export_pop_toAsset',
-  assetId: 'pop_changePerCoastgrid'
-}); 
+// Export.table.toAsset({
+//   collection: pop_changePerCoastgrid, 
+//   description: 'export_pop_toAsset',
+//   assetId: 'pop_changePerCoastgrid'
+// }); 
 
-Export.table.toAsset({
-  collection:nl_changePerCoastgrid,
-  description: 'export_nl_toAsset',
-  assetId: 'nl_changePerCoastgrid'
-}); 
+// Export.table.toAsset({
+//   collection:nl_changePerCoastgrid,
+//   description: 'export_nl_toAsset',
+//   assetId: 'nl_changePerCoastgrid'
+// }); 
 
