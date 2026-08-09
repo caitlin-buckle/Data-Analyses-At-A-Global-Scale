@@ -88,13 +88,12 @@ Map.setOptions('SATELLITE');
 var field_stations = ee.FeatureCollection([hamilton_island,heron_island,lizard_island,daydream_island,orpheus_island,kimberley_station,coral_bay]);
 print(field_stations);
 
-
 // import Allen coral atlas (ACA) data into GEE
 
 var ACA = ee.Image("ACA/reef_habitat/v2_0"); 
 print(ACA);
 
-Map.addLayer(ACA);
+Map.addLayer(ACA,{},'Allen Coral Atlas');
 
 // Select the appropriate band to access benthic (not geomorphic data)
 var benthic = ee.Image("ACA/reef_habitat/v2_0").select('benthic'); 
@@ -107,7 +106,7 @@ var coral = benthic
   .selfMask(); // mask out all non-coral/algae pixels (0 values)
 print(coral); 
 
-Map.addLayer(coral,{palette:'coral'},'Coral only'); //add layer with coral and algae
+Map.addLayer(coral,{palette:'coral'},'Coral/Algae Only'); // add layer with coral and algae
 
 //var station_buffer = ee.Feature(field_stations.first()).buffer(800); // buffer around the first feature 
 //Map.addLayer(station_buffer,{palette:'yellow'},'Station Buffer');
@@ -120,7 +119,7 @@ var buffer_loop = function (feature){
 
 var out = field_stations.map(buffer_loop);
 print(out, 'out'); 
-Map.addLayer(out,{color:'yellow'},'Buffer loop'); 
+Map.addLayer(out,{color:'yellow'},'Buffer Zones'); 
 
 
 var area_pixels = ee.Image(ee.Image.pixelArea()).updateMask(coral);
@@ -132,7 +131,7 @@ var area_out = area_pixels.reduceRegions({
 }); 
 
 print(area_out,'area_out'); // area of coral within the station buffer zones
-Map.addLayer(area_out,{color:'green'},'Coral Area')
+Map.addLayer(area_out,{color:'green'},'Coral/Algae Area')
 
 // Clean it up 
 
