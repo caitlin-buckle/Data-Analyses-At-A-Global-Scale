@@ -11,11 +11,12 @@ var abyssalPlains = dataset.gt(-6000).and(dataset.lt(-3000)); // abyssal plains,
 var continentalSlope = dataset.gt(-3000).and(dataset.lt(-250)); // continental and island slopes, 250-3000m
 var submarineCanyon = dataset.lt(-200).and(slope.gt(6)); // submarine canyons, deeper than 200m and slopes of >6 degrees
 
-var ocean_ecosystem = ee.Image(0)
-  .where(hadalTrench,4)
-  .where(abyssalPlains,3)
-  .where(continentalSlope,2)
-  .where(submarineCanyon,1)
+  var ocean_ecosystem = ee.Image(0)
+  .where(hadalTrench, 5)
+  .where(abyssalPlains, 4)
+  .where(continentalSlope, 3)
+  .where(submarineCanyon, 2)
+  .where(shallowCoastal, 1) 
   .selfMask();
 
 //var land = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017').union();
@@ -28,8 +29,8 @@ snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map","Blank Map");
 Map.setCenter(150,-25,4);
 Map.addLayer(ocean_ecosystem,{
   min:1,
-  max:4,
-  palette: ['66ffd9','66b3ff','0044cc','001133']
+  max:5,
+  palette: ['F0F8FF','66ffd9','66b3ff','0044cc','001133']
 },'Major Marine Ecosystem Types');
 
 // Adding vector layer - marine protected areas 
@@ -67,7 +68,7 @@ var linker = ui.Map.Linker([leftMap, rightMap]);
 
 // 3. Populate the LEFT map (Ecosystems base only)
 leftMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
-leftMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
+leftMap.addLayer(ocean_ecosystem, {min:1, max:5, palette: ['F0F8FF','66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
 
 // // 4. Populate the RIGHT map (Ecosystems base + Marine MPAs on top)
 // rightMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
@@ -76,7 +77,7 @@ leftMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','00
 
 // 4. Populate the RIGHT map (Ecosystems base + Marine MPAs on top)
 rightMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
-rightMap.addLayer(ocean_ecosystem, {min:1, max:4, palette: ['66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
+rightMap.addLayer(ocean_ecosystem, {min:1, max:5, palette: ['F0F8FF','66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
 
 // // Explicitly style the MPAs as a rasterized image layer for clean rendering
 // var mpaVis = marineMPAs.style({color: 'yellow', fillColor: 'yellow'});
@@ -146,6 +147,7 @@ var addLegendItem = function(color, text) {
 };
 
 // Add ecosystem items (matching your palette: ['66ffd9','66b3ff','0044cc','001133'])
+legend.add(addLegendItem('#F0F8FF','Shallow Waters <250m'));
 legend.add(addLegendItem('#66ffd9', 'Submarine Canyon (>200m, Slope >6°)'));
 legend.add(addLegendItem('#66b3ff', 'Continental Slope (250m - 3000m)'));
 legend.add(addLegendItem('#0044cc', 'Abyssal Plains (3000m - 6000m)'));
