@@ -156,7 +156,12 @@ legend.add(addLegendItem('#001133', 'Hadal Trench (>6000m)'));
 legend.add(addLegendItem('yellow', 'Protected Areas'));
 
 // Add legend directly to the right map pane so it renders inside the app layout
-rightMap.add(legend);
+// rightMap.add(legend);
+
+// 6. Replace the Code Editor display with the split panel app once
+// ui.root.widgets().reset([splitPanel]);
+
+leftMap.add(legend);
 
 // 6. Replace the Code Editor display with the split panel app once
 ui.root.widgets().reset([splitPanel]);
