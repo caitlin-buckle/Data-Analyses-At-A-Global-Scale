@@ -1,0 +1,201 @@
+---
+title: "Deep Oceans Assignment"
+author: "Caitlin Buckle"
+date: "2026-08-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#### Import Dataset 
+
+var dataset = ee.Image("NOAA/NGDC/ETOPO1").select('bedrock'); // import the dataset (ETOPO1), select bedrock band
+
+dataset = dataset.updateMask(dataset.lt(0));
+
+print(dataset); 
+
+Map.addLayer(dataset,{min:-3000,max:3000,palette:['darkblue','blue','green','yellow','orange','red']},'Bedrock'); 
+
+#### Generate Key Variables 
+
+var slope = ee.Terrain.slope(dataset); // calculate slope from ETOPO1 dataset 
+
+var shallowCoastal = dataset.gt(-250).and(dataset.lt(0)); // shallow coastal water 
+
+var hadalTrench = dataset.lt(-6000); // hadal trenches and troughts, >6000m
+
+var abyssalPlains = dataset.gt(-6000).and(dataset.lt(-3000)); // abyssal plains, 3000-6000m
+
+var continentalSlope = dataset.gt(-3000).and(dataset.lt(-250)); // continental and island slopes, 250-3000m
+
+var submarineCanyon = dataset.lt(-200).and(slope.gt(6)); // submarine canyons, deeper than 200m and slopes of >6 degrees
+
+#### Combine Individual Deep Ocean Ecosystems Into Single Variable 
+
+  var ocean_ecosystem = ee.Image(0)
+  .where(hadalTrench, 5)
+  .where(abyssalPlains, 4)
+  .where(continentalSlope, 3)
+  .where(submarineCanyon, 2)
+  .where(shallowCoastal, 1) 
+  .selfMask();
+
+#### Import Snazzy Base Map Style and Set Map Centre 
+
+var snazzy = require("users/aazuspan/snazzy:styles");
+
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map","Blank Map");
+
+Map.setCenter(150,-25,4);
+
+#### Add Deep Ocean Ecosystem Types to Map
+Map.addLayer(ocean_ecosystem,{
+  min:1,
+  max:5,
+  palette: ['F0F8FF','66ffd9','66b3ff','0044cc','001133']
+},'Major Marine Ecosystem Types');
+
+#### Adding vector layer - marine protected areas 
+
+var pa = ee.FeatureCollection("WCMC/WDPA/current/polygons"); // import WDPA dataset (polygons of global protected areas)
+
+##### Had trouble with getting the MARINE property in the WDPA dataset to filter (keep returning 0 items with a 2 score). Following code was attempted 
+
+//var MPAs = pa.filter(ee.Filter.inList('marine', [1, 2])); // filter the pa dataset by MARINE property, with 1 being coastal PAs (encompasses terrestrial and marine environ), 2 being fully marine PAs
+
+//var coastalMPAs = MPAs.filter(ee.Filter.eq('marine', 1));
+
+//var MarineMPAs = MPAs.filter(ee.Filter.eq('marine', 2));
+
+//print('Total PA count:', pa.size());
+
+//print('Marine/Coastal PA count:', MarineMPAs.size());
+
+//Map.addLayer(coastalMPAs, {color: 'orange'}, 'Coastal MPAs (1)');
+
+//Map.addLayer(MarineMPAs, {color: 'yellow'}, '100% Marine MPAs (2)');
+
+##### Used GIS_M_Area to filter protected areas that had a marine area greater than 0 within the WDPA dataset. This did mean terrestrial zones were included, however this is still important as there is a high degree of connectivity between terrestrial and marine proteced areas. 
+
+var marineMPAs = pa.filter(ee.Filter.gt('GIS_M_AREA', 0));
+
+print('Verified Marine/Coastal Count:', marineMPAs.size());
+
+var mpaImage = marineMPAs.style({color: 'yellow', fillColor: 'yellow'});
+
+Map.addLayer(marineMPAs, {color: 'yellow'}, 'Marine Protected Areas');
+
+#### Creating Seperate Map Windows to Use Split Panel (for app)
+
+var leftMap = ui.Map();
+
+var rightMap = ui.Map();
+
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map", "Blank Map", leftMap);
+
+snazzy.addStyle("https://snazzymaps.com/style/48750/blank-map", "Blank Map", rightMap);
+
+##### Link the two map frames together so they pan and zoom in sync
+
+var linker = ui.Map.Linker([leftMap, rightMap]);
+
+##### Add the data that is on the left-hand map (only the original dataset, and deep ocean ecosystems layer)
+
+leftMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
+
+leftMap.addLayer(ocean_ecosystem, {min:1, max:5, palette: ['F0F8FF','66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
+
+##### Add the same data to the right-hand map, and the MPA polygons as well 
+
+rightMap.addLayer(dataset, {min:-3000, max:3000, palette:['darkblue','blue','green','yellow','orange','red']}, 'Dataset');
+
+rightMap.addLayer(ocean_ecosystem, {min:1, max:5, palette: ['F0F8FF','66ffd9','66b3ff','0044cc','001133']}, 'Ocean Ecosystems');
+
+var mpaVis = marineMPAs.style({color: 'yellow', fillColor: 'FFFF0066', width: 1});
+
+rightMap.addLayer(mpaVis, {}, 'Marine Protected Areas');
+
+#### Create the split panel with the slider (for app)
+
+var splitPanel = ui.SplitPanel({
+  firstPanel: leftMap,
+  secondPanel: rightMap,
+  orientation: 'horizontal',
+  wipe: true
+});
+
+##### Replace the Code Editor display with the split panel app once
+
+ui.root.widgets().reset([splitPanel]);
+
+#### Creating a legend (for app) 
+
+var legend = ui.Panel({
+  style: {
+    position: 'bottom-left',
+    padding: '8px 15px'
+  }
+});
+
+##### Creating a legend title 
+
+var legendTitle = ui.Label({ 
+  value: 'Map Legend',
+  style: {
+    fontWeight: 'bold',
+    fontSize: '16px',
+    margin: '0 0 4px 0',
+    padding: '0'
+  }
+});
+legend.add(legendTitle);
+
+var addLegendItem = function(color, text) {
+  var colorBox = ui.Label({
+    style: {
+      backgroundColor: color,
+      padding: '8px',
+      margin: '0 4px 4px 0'
+    }
+  });
+  
+  var description = ui.Label({
+    value: text,
+    style: {margin: '0 0 4px 6px'}
+  });
+  
+  return ui.Panel({
+    widgets: [colorBox, description],
+    layout: ui.Panel.Layout.Flow('horizontal')
+  });
+};
+
+##### Add ecosystem types and marine protected areas to the legend 
+
+legend.add(addLegendItem('#F0F8FF','Shallow Waters <250m'));
+
+legend.add(addLegendItem('#66ffd9', 'Submarine Canyon (>200m, Slope >6°)'));
+
+legend.add(addLegendItem('#66b3ff', 'Continental Slope (250m - 3000m)'));
+
+legend.add(addLegendItem('#0044cc', 'Abyssal Plains (3000m - 6000m)'));
+
+legend.add(addLegendItem('#001133', 'Hadal Trench (>6000m)'));
+
+legend.add(addLegendItem('yellow', 'Marine Protected Areas'));
+
+##### Render the legend to the left-hand side map 
+
+leftMap.add(legend);
+
+ui.root.widgets().reset([splitPanel]);
+
+#### Insure that the map centre of both frames is set to Australia 
+
+leftMap.setCenter(133, -25, 4);
+
+rightMap.setCenter(133, -25, 4);

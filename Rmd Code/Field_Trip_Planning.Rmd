@@ -1,0 +1,198 @@
+---
+title: "Field Trip Planning - ACA and GEE"
+author: "Caitlin Buckle"
+date: "2026-08-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Created geometries for each research station chosen (see portfolio for list of research stations included)
+
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var hamilton_island = 
+    /* color: #11c2ae */
+    /* shown: false */
+    ee.Feature(
+        ee.Geometry.Point([148.95767591667175, -20.346558299298398]),
+        {
+          "station": "'Hamilton Island'",
+          "system:index": "0"
+        }),
+    heron_island = 
+    /* color: #c1ff18 */
+    /* shown: false */
+    ee.Feature(
+        ee.Geometry.Point([151.91127487564088, -23.442048316593418]),
+        {
+          "station": "'Heron Island'",
+          "system:index": "0"
+        }),
+    lizard_island = 
+    /* color: #c21eff */
+    /* shown: false */
+    ee.Feature(
+        ee.Geometry.Point([145.4463433227539, -14.667714572471915]),
+        {
+          "station": "'Lizard Island'",
+          "system:index": "0"
+        }),
+    daydream_island = 
+    /* color: #e76511 */
+    /* shown: false */
+    ee.Feature(
+        ee.Geometry.Point([148.81583906745914, -20.25176345889179]),
+        {
+          "station": "'Daydream Island'",
+          "system:index": "0"
+        }),
+    orpheus_island = 
+    /* color: #1afaff */
+    /* shown: false */
+    ee.Feature(
+        ee.Geometry.Point([146.48983504591294, -18.612940656473658]),
+        {
+          "station": "'Orpheus Island'",
+          "system:index": "0"
+        }),
+    kimberley_station = 
+    /* color: #1e92ff */
+    /* shown: false */
+    ee.Feature(
+        ee.Geometry.Point([123.00976396560671, -16.4525299120754]),
+        {
+          "station": "'Kimberley Marine Research Station'",
+          "system:index": "0"
+        }),
+    coral_bay = 
+    /* color: #0000ff */
+    /* shown: false */
+    ee.Feature(
+        ee.Geometry.Point([113.76939119273432, -23.142234535159165]),
+        {
+          "station": "'Coral Bay Research Station'",
+          "system:index": "0"
+        });
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
+
+## MB5370 Module Four Workshop Four  
+
+
+#### Set distance that we can snorkel from the station/water entry point - maximum 800m 
+
+var distance = 800; // 800m allowed to snorkel from the station 
+
+#### Add the field station geometries to the map as map layer so can see them in an app 
+
+Map.addLayer(hamilton_island, {color: 'red'}, 'Hamilton Island');
+
+Map.addLayer(heron_island, {color: 'blue'}, 'Heron Island');
+
+Map.addLayer(lizard_island, {color: '00FF00'}, 'Lizard Island');
+
+Map.addLayer(daydream_island, {color: 'yellow'}, 'Daydream Island');
+
+Map.addLayer(orpheus_island, {color: 'orange'}, 'Orpheus Island');
+
+Map.addLayer(kimberley_station, {color: 'purple'}, 'Kimberley Station');
+
+Map.addLayer(coral_bay, {color: 'FF007F'}, 'Coral Bay');
+
+Map.setOptions('SATELLITE'); 
+
+// Map.setCenter(113.7764,-23.1447,17); // used to find the different research stations
+
+#### Create a feature collection using the imported geometries for each station 
+
+var field_stations = ee.FeatureCollection([hamilton_island,heron_island,lizard_island,daydream_island,orpheus_island,kimberley_station,coral_bay]);
+print(field_stations);
+
+#### Import Allen coral atlas (ACA) data into GEE from GEE data catalogue 
+
+var ACA = ee.Image("ACA/reef_habitat/v2_0"); 
+print(ACA);
+
+Map.addLayer(ACA,{},'Allen Coral Atlas');
+
+#### Select the appropriate band to access benthic (not geomorphic data)
+var benthic = ee.Image("ACA/reef_habitat/v2_0").select('benthic'); 
+print(benthic);
+
+#### Extract coral cover band from benthic band 
+
+var coral = benthic
+  .eq(15) // pixel value of coral/algae is 15 (found in ACA info in catalogue) - returns 1 if true, 0 if false
+  .selfMask(); // mask out all non-coral/algae pixels (0 values)
+print(coral); 
+
+Map.addLayer(coral,{palette:'coral'},' ACA Coral/Algae Only'); // add layer with coral and algae
+
+//var station_buffer = ee.Feature(field_stations.first()).buffer(800); // buffer around the first feature 
+//Map.addLayer(station_buffer,{palette:'yellow'},'Station Buffer');
+
+#### To run as a .map - looping over all stations 
+var buffer_loop = function (feature){
+  var buffered = feature.buffer(800) // applies a 800m buffer when given a feature 
+  return buffered;
+}; 
+
+var out = field_stations.map(buffer_loop);
+print(out, 'out'); 
+Map.addLayer(out,{color:'yellow'},'Buffer Zones'); 
+
+
+var area_pixels = ee.Image(ee.Image.pixelArea()).updateMask(coral);
+
+var area_out = area_pixels.reduceRegions({
+  reducer:ee.Reducer.sum(),
+  collection:out, 
+  scale:5
+}); 
+
+#### Print the area of coral within each station buffer zone 
+
+print(area_out,'area_out'); // area of coral within the station buffer zones
+Map.addLayer(area_out,{color:'green'},'Coral/Algae Area')
+
+#### Clean it up 
+
+var cleaner = function (feature){
+  var clean = {
+    station_name: feature.get('Field_Station'),
+    area_m2: ee.Number(feature.get('sum')),
+    area_km2:ee.Number(feature.get('sum')).divide(1000*1000),
+    analyst: 'caitlin'
+  }
+  return feature.set(clean)
+}
+
+var cleaned_result = area_out.map(cleaner).sort('area_km2',false);
+print(cleaned_result,'cleaned');
+
+Map.setCenter(133, -25, 4);
+Map.setZoom(4);
+
+#### Export results to my computer 
+
+// Export.table.toDrive({
+//   collection:cleaned_result,
+//   description:'exportToDrive',
+//   fileNamePrefix:'research_stations',
+//   fileFormat:'CSV'
+// });
+
+// var exportImage = ACA.clip(orpheus_island);
+// Map.addLayer(exportImage);
+
+// Export.image.toDrive({
+//   image:exportImage,
+//   description:'exportImageToDrive',
+//   fileNamePrefix: 'aca_orpheus', 
+//   fileFormat: 'GeoTIFF',
+//   scale:5
+// }); 
+
+

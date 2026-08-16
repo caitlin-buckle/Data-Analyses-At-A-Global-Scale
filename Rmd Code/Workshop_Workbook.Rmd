@@ -1,0 +1,366 @@
+---
+title: "Workshop Workbook"
+author: "Caitlin Buckle"
+date: "2026-08-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## MB5370 Module Four Workshop One 
+
+Notes to Myself 
+
+  Use two forward slashes for writing comments 
+    
+  /* You can also use single slash and star to write multi comment lines if you like */
+    
+  Ctrl+Enter shortcut to run the script (will run everything, not able to run singular lines)
+    
+  It is general practice to finish a line of code with ; , means that the code ends there (will work without but will say it is missing ;) 
+    
+  Cmd+/ to comment out entire section (so EE doesn't run the whole script every time)
+
+#### Section One: Learning Javascript 
+
+// print('Hello, World!')
+
+// // Creating Variables
+
+// var the_answer = 42; //creating a variable (numeric, integer)
+
+// print(the_answer);
+
+// var city = 'San Fransisco'; //creating a categorical variable
+
+// print(city) ;
+
+// var population = 873965; // creating numeric variable 
+
+// print(population);
+
+// // No function called 'print', Earth engine using Chrome's built-in Javascript to run Javascript code (in purple)
+
+// print('This city is',city); //Javascript - stitching two variables together 
+
+// // Creating Lists 
+
+// var cities = ['Townsville','Los Angeles','New York'] ;
+
+// print(cities); // List = collection of words, each word has a index number (can pull out specific ones by referencing the index number) - differs based on programming language
+
+// // Dictionaries 
+
+// var cityData = { // creates an object with properties described in the code, if multiple values (e.g., coords) generates a drop-down with index numbers for each value 
+//   'city': 'San Fransisco',
+//   'coord': [122.2, 37.77],
+//   'pop': 873965
+//   };
+// print(cityData);
+
+// // take notes for creating functions!!
+
+#### Section Two: Earth Engine Basics
+
+// // Computing with Earth Engine 
+
+// var a = 1; 
+
+// var b = 2;
+
+// print(a);
+
+// print(b);
+
+// var result = a+b; // uses pre-defined variables where a = 1 and b = 2
+
+// print(result); // still using Javascript, not EE
+
+// var a1 = ee.Number(1);
+
+// var a2 = ee.Number(3);
+
+// var result2 = print(a1 + a2); // doesn't work, just adds two strings together because we are using Earth Engine functions and trying to run with Javascript
+
+// // need to use add() - Earth Engine function 
+
+// var result2 = print(a1.add(a2)); // using add(), adds two earth engine numbers together (packaged and sent to EE computers, then returned result in console)
+
+// // unlike R, functions are applied directly to the object you are trying to apply them to (e.g., a2) (functions are within the code, not the arguments inside the function)
+
+// // using a . between the two variables is very similar to piping (%>% or |) in R
+
+// var yearList = ee.List.sequence(1980,2020,5); // create a list sequence from 1980 to 2020, in increments of 5
+// print(yearList)
+
+// Data Structure 
+
+// Map.setOptions('SATELLITE') // sets that base layer as satellite imagery to satellite (other options include terrain)
+// // Can change how the maps look using snazzy.maps.com 
+
+// Map.setCenter(174.0638,-39.298,11) // sets the centre of your map to the coordinates of your choice 
+
+// // In search bar, search SRTM Version 4 to read about the data, and copy EE snippet to add to EE 
+
+// // Import SRTM data 
+
+// var dataset =ee.Image("CGIAR/SRTM90_V4");
+
+// print (dataset) // type = image, one band (0 = elevation), can also see properties in console
+
+// Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
+
+// // min is at sea level (0m), max is 2500m 
+
+// // In insepctor, can click on a point and it will tell you the elevation of that point (click the down arrow next to custom visualization)
+
+// // By changing palette, can make custom colours 
+
+// // Custom Visualisation is the name of the layer 
+
+// // Can turn off layers in the map console (there will be a button called "Layers" if any layers have been created, can toggle on/off)
+
+// // Can also use hex colour codes to set custome palettes 
+
+// // Important to set your maximums (if working with elevation) to the context you are working with (e.g., what works for Taranaki, ~2300m, will not work for the Himalayas, ~8000m)
+
+// // Search WDPA (polygons)
+
+// var WDPA = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+
+// Map.addLayer(WDPA,{color:'lightgreen'},'WDPA'); // adds polygons of protected areas to our map 
+
+// // can use inspector tool to inspect WDPA areas (properties --> lots of info on that specific protected area) 
+
+## MB5370 Module Four Workshop Two 
+
+#### Section One: Filtering
+
+// Load Mt Taranaki layers from yesterday
+
+// Map.setOptions('SATELLITE');
+
+// Map.setCenter(174.0638,-39.298,11) ;
+
+// var dataset =ee.Image("CGIAR/SRTM90_V4");
+
+// print ('Elevation', dataset); // 
+
+// Map.addLayer(dataset, {min:0,max:2500,palette: ['darkblue','lightblue','yellow']},'custom visualization');
+
+// var protected_area = ee.FeatureCollection("WCMC/WDPA/current/polygons");
+
+// Map.addLayer(protected_area,{color:'lightgreen'},'WDPA'); 
+
+// print('Number of Protected Areas', protected_area.size()); // .size() reports the number of rows in Feature collection 
+
+// // WDPA feature collection = 307,004 (number of protected areas globally)
+
+// // Not all protected areas are the same (differing strengths of management etc.), can filter by protected area categories (IUCN_CAT)
+
+// print('First PA in FC', protected_area.first()); //IUCN_CAT: IV (4)
+
+// var iucn_pa = protected_area.filter(ee.Filter.eq('IUCN_CAT', 'II')); // Filter protected_area for level II protected areas
+
+// Map.addLayer(iucn_pa, {color:'pink'},'National Parks'); //colour all national parks pink 
+
+// var iucn_pre1980 = protected_area.filter(ee.Filter.lte('STATUS_YR',1980)); //protected areas established pre-1980
+
+// Map.addLayer(iucn_pre1980,{color:'white'},'Protected Areas in 1980');
+
+// var countries = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017"); // load in country datatset from catalogue (feature collection, polygons of countries borders)
+
+// print('Countries', countries); // under features (312 elements), properties, country_na --> will tell you name of Country
+
+// Map.addLayer(countries);
+
+// // can use inspector tool to click on country to also isolate country
+
+// var nz = countries.filter(ee.Filter.equals('country_na','New Zealand')); // filters the feature class so only features with country_na = New Zealand
+
+// print('NZ', nz); // only NZ in the feature collection 
+
+// Map.addLayer(nz); 
+
+// var nz_pas = protected_area.filter(ee.Filter.bounds(nz)) // apply a spatial filter (nz) to the protected areas 
+
+// print ('Number of PAs in NZ', nz_pas.size()) // 10,120 protected areas in NZ (or actually those within the land mass boundaries (not EEZ boundaries))
+
+// Map.addLayer(nz_pas,{color:'yellow'},'NA PAs only') // NOTE: only includes protected areas that are within/encompass a defined terrestrial landmass in the NZ-only feature class (doesn't include protected areas with no terrestrial landmass)
+
+// var nz_national_parks = protected_area // can string all commands together (like piping in R)
+//   .filter(ee.Filter.eq('IUCN_CAT','II')) // filter to only national parks (IUCN_CAT = 2)
+//   .filter(ee.Filter.bounds(nz)) // filter to only those within NZ polygon boundaries
+
+// print('Number of National Parks in NZ', nz_national_parks.size()) // National Parks in NZ = 18 
+
+#### Section Two: Computation in Earth Engine 
+
+// The problem - problem w/ radar instrument resulting in all topographical features underestimated by 100m 
+
+// Import SRTM data 
+
+// var dataset =ee.Image("CGIAR/SRTM90_V4"); // import elevation image
+
+// print (dataset);
+
+// var elevationVis = {min:0,max:2500,palette: ['darkblue','lightblue','yellow']}; // set elevation visual custom parameters
+
+// Map.addLayer(dataset,elevationVis,'Elevation',true, 0.6); // add elevation visual layer to map, 0.6 changes the opacity so can still see satellite image underneath 
+
+// var strm_fixed = dataset.add(100); // adds 100 onto each integer value (for each pixel in the raster - correcting problem caused by radar)
+
+// Map.addLayer(strm_fixed,elevationVis,'Fixed STRM', true, 0.6);
+
+// var elevGt1500 = dataset.gt(1500); // filters pixels to show only those with an elevation greater than 1500
+
+// Map.addLayer(elevGt1500); // binary output, greater than 1500 = white, not greater = black 
+
+// var elevGt1500 = dataset.gt(1500).selfMask();
+
+// Map.addLayer(elevGt1500); // masks every 0 value (not greater than 1500m) out of the image - better for visualistics and means no other operations performed are applied to it 
+
+// Map.addLayer(elevGt1500.selfMask(), {palette:'fuchsia'}, 'GT 1500m',true, 0.7);
+
+// var terrain = ee.Terrain.products(dataset); // use terrain (algorithm that returns several topographic variables from an elevation image)
+
+// print('Terrain',terrain); // four bands within - elevation, slope, aspect, hillshade
+
+// var slope = terrain.select(['slope']); // create images from the bands (within terrain) that we are interested in
+
+// var hillshade = terrain.select(['hillshade']); 
+
+// Map.addLayer(hillshade);
+
+// Map.addLayer(slope,{palette: ['white','darkblue','black'],min:0,max:45},'slope');
+
+#### Section Three: Spatial Reducers 
+
+// var taranaki = protected_area.filter(ee.Filter.eq('NAME','Egmont National Park')); // uncommented protected_area creation in code above 
+
+// Map.addLayer(taranaki, {color:'orange'},'Mt Taranaki')
+
+// var slopeOutput = slope.reduceRegion({ // apply spatial reducer to estimate mean slope of Mt Taranki NP
+//   reducer:ee.Reducer.mean(), // compute mean of all slope pixel values in NP 
+//   geometry: taranaki, //the geometry we created above
+//   scale: 90 // pixel size in metres (from NP metadata)
+// })
+// print('slopeOutput',slopeOutput) // mean slope = 10.036 degrees 
+
+// // In ArcGIS, would clip the elevation (STRM) layer first to the Mt Taranaki NP - compare whether clipping first or just applying 'geometry' argument reduces the analysis 
+
+// var taranakiSlope = slope.clip(taranaki);
+
+// Map.addLayer(taranakiSlope,{palette: ['white','darkblue','black'],min:0,max:45},'taranaki slope');
+
+// var slopeOutput2 = taranakiSlope.reduceRegion({
+//   reducer: ee.Reducer.mean(),
+//   geometry: taranaki,
+//   scale: 90
+// }); // generate second slope output using the pre-clipped slope
+
+// print('slopeOutput2',slopeOutput2); // mean slope = 10.036 degrees - same as using the geometry to clip (as output one)
+
+// var elevOutput_Max = dataset.reduceRegion({
+//   reducer:ee.Reducer.max(),
+//   geometry: taranaki,
+//   scale: 90
+// });
+
+// print('elevOutput_Max',elevOutput_Max); // max elevation = 2484m 
+
+// var elevOutput_Min = dataset.reduceRegion({
+//   reducer:ee.Reducer.min(),
+//   geometry:taranaki, 
+//   scale: 90
+// }); 
+
+// print('elevOutput_Min',elevOutput_Min) // min elevation = 108m 
+
+// // LOTS of different reducers available 
+
+// var elevOutput_MinMax = dataset.reduceRegion({
+//   reducer:ee.Reducer.minMax(), // different reducer - calculates min and max in one command!!
+//   geometry: taranaki,
+//   scale:90
+// }); 
+
+// print('elevOutput_MinMax',elevOutput_MinMax) // max = 2484m, min = 108m 
+
+// // EXAMPLE: finding the area (km2) of Mt Taranaki NP that is above 1500m elevation threshold 
+
+// var areaGt1500m = elevGt1500 
+//   .multiply(ee.Image.pixelArea()) // generates area of each pixel 
+//   .reduceRegion({
+//     reducer:ee.Reducer.sum(), // sum of all pixels together (total area)
+//     geometry: taranaki,
+//     scale:90 
+//   })
+
+// print('The area of Mt Taranaki NP above 1500m (m2)',areaGt1500m) // area >1500m = 11,474,443.341m2
+
+// print('The area of Mt Taranaki NP above 1500m (km2)',
+
+// ee.Number(areaGt1500m.get('elevation')).divide(1000*1000)) // area >1500m = 11.474km2
+
+#### Section Four: Image Reducers
+
+// var dataset = ee.ImageCollection('WORLDCLIM/V1/MONTHLY'); 
+
+// print(dataset); // image collection, 12 images (temperature for each month)
+
+// var jan_climate = ee.Image('WORLDCLIM/V1/MONTHLY/01');
+
+// var july_climate = ee.Image('WORLDCLIM/V1/MONTHLY/07');
+
+// var jan_climate_avg = jan_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
+
+// var july_climate_avg = july_climate.select('tavg').multiply(0.1); // pixel error, multiply each pixel by 0.1
+
+// var meanTemperatureVis = {
+//   min: -40, 
+//   max: 30, 
+//   palette: ['blue','purple','cyan','green','yellow','red'],
+// };
+
+// Map.addLayer(jan_climate_avg, meanTemperatureVis,'janClimate');
+
+// Map.addLayer(july_climate_avg,meanTemperatureVis,'julyClimate'); 
+
+// var annualMeanTemperature = dataset // generating an annual average 
+//   .select('tavg')
+//   .mean() // reducer
+//   .multiply(0.1); // scale pixels to correct values 
+
+// Map.setCenter(71.7,52.4,3); // set map centre to central Europe 
+
+// Map.addLayer(annualMeanTemperature,meanTemperatureVis,'Mean Annual Temperature'); 
+
+// var dataset = ee.ImageCollection('LANDSAT/LC08/C02/T1_TOA')
+//   .filterDate('2017-01-01','2017-12-31'); // filter to only images from 2017
+
+// var trueColour = dataset.select(['B4','B3','B2']);
+// var trueColourVis = {
+//   min: 0.0,
+//   max: 0.4
+// };
+
+// Map.setCenter(146.746,-19.529,9); // set the centre to Townsville
+
+// Map.addLayer(trueColour,trueColourVis,'True Colour Landsat'); // 63 images in our collection (using inspector, clicked on approx location of JCU Townsville campus)
+
+// var LandsatMedian = trueColour.median(); // using .median() reduced to find the median pixel in all 63 images
+
+// Map.addLayer(LandsatMedian,trueColourVis,'True Colour Median'); // clouds removed!! 
+
+## MB5370 Module Four Workshop Three 
+
+See Nightlight and Coastlines code 
+
+## MB5370 Module Four Workshop Four
+
+See Field Trip Planning code 
+
+
